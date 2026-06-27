@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拼音学习乐园</title>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --c1: #FF6B6B; /* coral red */
+  --c2: #FFA94D; /* warm orange */
+  --c3: #FFD43B; /* sunny yellow */
+  --c4: #69DB7C; /* fresh green */
+  --c5: #4DABF7; /* sky blue */
+  --c6: #B197FC; /* soft purple */
+  --c7: #F783AC; /* pink */
+  --bg: #FFF5F0;
+  --card-bg: #FFFFFF;
+  --text: #3D3D3D;
+  --text-light: #868E96;
+  --radius: 24px;
+  --radius-sm: 16px;
+  --font-xl: 48px;
+  --font-lg: 32px;
+  --font-md: 22px;
+  --font-sm: 18px;
+  --shadow: 0 6px 24px rgba(0,0,0,0.08);
+  --shadow-hover: 0 10px 32px rgba(0,0,0,0.13);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== Background decorations ===== */
+.bg-decor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.12;
+}
+.cloud-1 { top: 6%; left: 5%; width: 160px; }
+.cloud-2 { top: 18%; right: 8%; width: 120px; }
+.cloud-3 { top: 55%; left: 3%; width: 100px; }
+.star-1 { top: 10%; right: 18%; font-size: 40px; opacity: 0.2; }
+.star-2 { bottom: 15%; left: 12%; font-size: 36px; opacity: 0.18; }
+.star-3 { top: 40%; right: 6%; font-size: 32px; opacity: 0.2; }
+
+/* ===== App Container ===== */
+#app {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* ===== Navigation Bar ===== */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0 20px;
+}
+.nav-back {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--card-bg);
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-back:hover { transform: scale(1.08); box-shadow: var(--shadow-hover); }
+.nav-back:active { transform: scale(0.95); }
+.nav-title {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ===== Pages ===== */
+.page {
+  display: none;
+  animation: fadeSlideIn 0.35s ease;
+}
+.page.active { display: block; }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Home Page ===== */
+.home-header {
+  text-align: center;
+  padding: 30px 0 10px;
+}
+.home-title {
+  font-size: 52px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--c1), var(--c2), var(--c3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.home-subtitle {
+  font-size: var(--font-md);
+  color: var(--text-light);
+}
+.home-mascot {
+  text-align: center;
+  font-size: 100px;
+  margin: 14px 0 20px;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.home-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 4px;
+}
+.home-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 28px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: var(--font-md);
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-align: left;
+}
+.home-card:hover { transform: scale(1.03); box-shadow: var(--shadow-hover); }
+.home-card:active { transform: scale(0.97); }
+.home-card-icon { font-size: 52px; flex-shrink: 0; }
+.home-card-text { display: flex; flex-direction: column; }
+.home-card-label { font-size: var(--font-lg); }
+.home-card-desc { font-size: var(--font-sm); font-weight: 400; opacity: 0.85; }
+
+/* ===== Toolbar ===== */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.tool-btn {
+  padding: 12px 22px;
+  border-radius: 50px;
+  border: 2.5px solid #E0D7C6;
+  background: var(--card-bg);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.15s;
+  color: var(--text);
+}
+.tool-btn:hover { border-color: var(--c5); background: #F0F6FF; }
+.tool-btn.active { background: var(--c5); color: #fff; border-color: var(--c5); }
+.tool-btn:active { transform: scale(0.96); }
+
+/* ===== Initials Grid ===== */
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+}
+.init-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 16px 8px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s, box-shadow 0.12s, background 0.2s;
+  border: 3px solid transparent;
+}
+.init-card:hover { transform: scale(1.05); box-shadow: var(--shadow-hover); }
+.init-card:active { transform: scale(0.94); }
+.init-card.highlight {
+  border-color: var(--c2);
+  background: #FFF8E8;
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(255,169,77,0.35);
+}
+.init-emoji { font-size: 34px; display: block; margin-bottom: 4px; }
+.init-py { font-size: 36px; font-weight: 800; color: var(--c5); display: block; line-height: 1.1; }
+.init-pronounce { font-size: 16px; font-weight: 600; color: var(--text-light); display: block; }
+
+/* ===== Finals Page ===== */
+.category-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.cat-tab {
+  padding: 12px 26px;
+  border-radius: 50px;
+  border: 2.5px solid #E0D7C6;
+  background: var(--card-bg);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.15s;
+  color: var(--text);
+}
+.cat-tab:hover { border-color: var(--c5); background: #F0F6FF; }
+.cat-tab.active { background: var(--c4); color: #fff; border-color: var(--c4); }
+.cat-tab:active { transform: scale(0.96); }
+
+.final-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+}
+.final-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 18px 10px 14px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s, box-shadow 0.12s;
+  border: 3px solid transparent;
+}
+.final-card:hover { transform: scale(1.05); box-shadow: var(--shadow-hover); }
+.final-card:active { transform: scale(0.94); }
+.final-card.highlight {
+  border-color: var(--c4);
+  background: #F0FFF4;
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(105,219,124,0.35);
+}
+.final-card.bounce {
+  animation: cardBounce 0.4s ease;
+}
+@keyframes cardBounce {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  60% { transform: scale(0.92); }
+}
+.final-card.tone-1 { border-color: var(--c5); }
+.final-card.tone-2 { border-color: var(--c4); }
+.final-card.tone-3 { border-color: var(--c2); }
+.final-card.tone-4 { border-color: var(--c1); }
+.final-emoji { font-size: 38px; display: block; margin-bottom: 6px; }
+.final-py { font-size: var(--font-lg); font-weight: 700; color: var(--text); display: block; }
+.final-example { font-size: 18px; color: var(--text-light); display: block; margin-top: 2px; }
+
+/* Tone selector buttons */
+.tone-btn.active.t1 { background: var(--c5); color: #fff; border-color: var(--c5); }
+.tone-btn.active.t2 { background: var(--c4); color: #fff; border-color: var(--c4); }
+.tone-btn.active.t3 { background: var(--c2); color: #fff; border-color: var(--c2); }
+.tone-btn.active.t4 { background: var(--c1); color: #fff; border-color: var(--c1); }
+
+/* ===== Quiz Page ===== */
+.quiz-setup {
+  text-align: center;
+  padding: 40px 0;
+}
+.quiz-mode-cards {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.quiz-mode-card {
+  padding: 28px 36px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.quiz-mode-card:hover { transform: scale(1.05); box-shadow: var(--shadow-hover); }
+.quiz-mode-card:active { transform: scale(0.96); }
+.quiz-mode-icon { font-size: 56px; display: block; margin-bottom: 8px; }
+
+.quiz-area { text-align: center; padding: 10px 0; }
+.quiz-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: var(--font-md);
+  font-weight: 600;
+}
+.progress-bar-wrap {
+  flex: 1; max-width: 300px;
+  height: 14px;
+  background: #E8E0D0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--c4), var(--c5));
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+.quiz-score { color: var(--c1); font-weight: 800; }
+
+.quiz-prompt {
+  font-size: 32px;
+  margin: 14px 0 24px;
+  font-weight: 700;
+}
+.quiz-speaker-btn {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--c3), var(--c2));
+  font-size: 46px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s;
+  margin-bottom: 24px;
+}
+.quiz-speaker-btn:hover { transform: scale(1.08); }
+.quiz-speaker-btn:active { transform: scale(0.92); }
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.quiz-option {
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  border: 3px solid #E0D7C6;
+  background: var(--card-bg);
+  cursor: pointer;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s, border-color 0.2s, background 0.2s;
+  min-height: 80px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.quiz-option:hover { transform: scale(1.04); border-color: var(--c5); }
+.quiz-option.correct {
+  border-color: var(--c4); background: #E6FAEC;
+  animation: popCorrect 0.5s ease;
+}
+.quiz-option.wrong {
+  border-color: var(--c1); background: #FFE8E8;
+  animation: shake 0.4s ease;
+}
+.quiz-option:disabled { pointer-events: none; }
+@keyframes popCorrect {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+/* ===== Quiz Complete ===== */
+.quiz-complete {
+  text-align: center;
+  padding: 30px 0;
+}
+.quiz-complete-icon { font-size: 100px; animation: bounce 1s ease-in-out infinite; }
+.quiz-complete-title { font-size: var(--font-xl); font-weight: 800; margin: 12px 0; }
+.quiz-complete-score { font-size: var(--font-lg); color: var(--c1); font-weight: 700; margin-bottom: 20px; }
+.complete-stars { font-size: 48px; margin: 14px 0; }
+
+/* ===== Difficulty selector ===== */
+.diff-selector {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 12px 0;
+}
+.diff-btn {
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: 2px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.diff-btn.active { background: var(--c6); color: #fff; border-color: var(--c6); }
+
+/* ===== Big Action Button ===== */
+.big-btn {
+  display: inline-block;
+  padding: 16px 44px;
+  border-radius: 50px;
+  border: none;
+  font-size: var(--font-md);
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin: 6px;
+}
+.big-btn:hover { transform: scale(1.05); box-shadow: var(--shadow-hover); }
+.big-btn:active { transform: scale(0.95); }
+
+/* ===== hidden util ===== */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- Background Decorations -->
+<svg class="bg-decor cloud-1" viewBox="0 0 200 120"><ellipse cx="60" cy="70" rx="50" ry="30" fill="#AAC4FF"/><ellipse cx="100" cy="60" rx="60" ry="35" fill="#C1D0FF"/><ellipse cx="140" cy="75" rx="45" ry="28" fill="#AAC4FF"/></svg>
+<svg class="bg-decor cloud-2" viewBox="0 0 160 100"><ellipse cx="50" cy="55" rx="40" ry="25" fill="#FFD8A8"/><ellipse cx="85" cy="45" rx="50" ry="30" fill="#FFE8C8"/><ellipse cx="115" cy="58" rx="35" ry="22" fill="#FFD8A8"/></svg>
+<svg class="bg-decor cloud-3" viewBox="0 0 140 90"><ellipse cx="40" cy="50" rx="35" ry="22" fill="#B4F0C8"/><ellipse cx="75" cy="42" rx="45" ry="28" fill="#D4FFE0"/><ellipse cx="105" cy="52" rx="30" ry="20" fill="#B4F0C8"/></svg>
+<div class="bg-decor star-1">&#11088;</div>
+<div class="bg-decor star-2">&#11088;</div>
+<div class="bg-decor star-3">&#11088;</div>
+
+<!-- App Container -->
+<div id="app">
+  <!-- Nav Bar (hidden on home) -->
+  <div id="navBar" class="nav-bar hidden">
+    <button class="nav-back" onclick="goHome()" title="返回首页">&#127968;</button>
+    <span id="navTitle" class="nav-title"></span>
+  </div>
+
+  <!-- ====== HOME PAGE ====== -->
+  <div id="homePage" class="page active">
+    <div class="home-header">
+      <div class="home-title">拼音学习乐园</div>
+      <div class="home-subtitle">快乐学拼音，从声母韵母开始！</div>
+    </div>
+    <div class="home-mascot">&#128050;</div>
+    <div class="home-cards">
+      <button class="home-card" style="background:linear-gradient(135deg,var(--c5),var(--c6))" onclick="showInitials()">
+        <span class="home-card-icon">&#127929;</span>
+        <span class="home-card-text">
+          <span class="home-card-label">声母学习</span>
+          <span class="home-card-desc">认识23个声母</span>
+        </span>
+      </button>
+      <button class="home-card" style="background:linear-gradient(135deg,var(--c4),#40C057)" onclick="showFinals()">
+        <span class="home-card-icon">&#127925;</span>
+        <span class="home-card-text">
+          <span class="home-card-label">韵母学习</span>
+          <span class="home-card-desc">认识韵母和四个声调</span>
+        </span>
+      </button>
+      <button class="home-card" style="background:linear-gradient(135deg,var(--c2),var(--c1))" onclick="showQuizSetup()">
+        <span class="home-card-icon">&#127942;</span>
+        <span class="home-card-text">
+          <span class="home-card-label">趣味练习</span>
+          <span class="home-card-desc">听声音选答案，闯关挑战</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ====== INITIALS PAGE ====== -->
+  <div id="initialsPage" class="page">
+    <div class="toolbar">
+      <button id="initGroupBtn" class="tool-btn active" onclick="toggleInitGroup()">全部声母</button>
+      <button id="autoPlayInitBtn" class="tool-btn" onclick="autoPlayInitials()">&#9654; 逐个播放</button>
+      <button id="stopInitBtn" class="tool-btn hidden" onclick="stopAutoInit()">&#9632; 停止</button>
+    </div>
+    <div id="initialsGrid" class="letter-grid"></div>
+  </div>
+
+  <!-- ====== FINALS PAGE ====== -->
+  <div id="finalsPage" class="page">
+    <div class="category-tabs" id="finalsCatTabs"></div>
+    <div class="toolbar">
+      <button id="toneBtn0" class="tool-btn tone-btn active" onclick="toggleTone(0)">全部声调</button>
+      <button id="toneBtn1" class="tool-btn tone-btn" onclick="toggleTone(1)">ˉ 第一声</button>
+      <button id="toneBtn2" class="tool-btn tone-btn" onclick="toggleTone(2)">ˊ 第二声</button>
+      <button id="toneBtn3" class="tool-btn tone-btn" onclick="toggleTone(3)">ˇ 第三声</button>
+      <button id="toneBtn4" class="tool-btn tone-btn" onclick="toggleTone(4)">ˋ 第四声</button>
+    </div>
+    <div class="toolbar">
+      <button id="autoPlayFinalsBtn" class="tool-btn" onclick="autoPlayFinals()">&#9654; 逐个播放</button>
+      <button id="stopFinalsBtn" class="tool-btn hidden" onclick="stopFinalsAuto()">&#9632; 停止</button>
+    </div>
+    <div id="finalsGrid" class="final-grid"></div>
+  </div>
+
+  <!-- ====== QUIZ PAGE ====== -->
+  <div id="quizPage" class="page">
+    <!-- Setup -->
+    <div id="quizSetup" class="quiz-setup">
+      <h2 style="font-size:36px;margin-bottom:8px;">选择练习模式</h2>
+      <div class="diff-selector">
+        <button id="diffEasy" class="diff-btn" onclick="setDifficulty('easy')">&#11088; 简单 (2选1)</button>
+        <button id="diffNormal" class="diff-btn active" onclick="setDifficulty('normal')">&#127775; 普通 (4选1)</button>
+      </div>
+      <div class="quiz-mode-cards">
+        <button class="quiz-mode-card" style="background:linear-gradient(135deg,var(--c5),var(--c6))" onclick="startQuiz('initial')">
+          <span class="quiz-mode-icon">&#127929;</span>声母练习
+        </button>
+        <button class="quiz-mode-card" style="background:linear-gradient(135deg,var(--c4),#40C057)" onclick="startQuiz('final')">
+          <span class="quiz-mode-icon">&#127925;</span>韵母练习
+        </button>
+      </div>
+    </div>
+    <!-- Active Quiz -->
+    <div id="quizActive" class="quiz-area hidden">
+      <div class="quiz-progress">
+        <span id="quizProgressText">第1题/共10题</span>
+        <div class="progress-bar-wrap"><div id="progressBarFill" class="progress-bar-fill" style="width:0%"></div></div>
+        <span>&#11088; <span id="quizScoreDisplay" class="quiz-score">0</span></span>
+      </div>
+      <div class="quiz-prompt">听一听，选一选！</div>
+      <button class="quiz-speaker-btn" onclick="replayQuizSound()">&#128266;</button>
+      <div id="quizOptions" class="quiz-options"></div>
+    </div>
+    <!-- Complete -->
+    <div id="quizComplete" class="quiz-complete hidden">
+      <div class="quiz-complete-icon">&#127881;</div>
+      <div class="quiz-complete-title">太棒了！</div>
+      <div class="complete-stars" id="completeStars"></div>
+      <div class="quiz-complete-score" id="completeScore"></div>
+      <button class="big-btn" style="background:var(--c5)" onclick="startQuiz(currentQuizMode)">&#128260; 再来一次</button>
+      <button class="big-btn" style="background:var(--c6)" onclick="showQuizSetup()">&#127968; 换模式</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const INITIALS = [
+  // Labial sounds (唇音)
+  { py:'b', pronounce:'bō', example:'播', emoji:'🍌', group:'labial', groupLabel:'唇音' },
+  { py:'p', pronounce:'pō', example:'泼', emoji:'🍎', group:'labial', groupLabel:'唇音' },
+  { py:'m', pronounce:'mō', example:'摸', emoji:'🐴', group:'labial', groupLabel:'唇音' },
+  { py:'f', pronounce:'fō', example:'佛', emoji:'🦊', group:'labial', groupLabel:'唇音' },
+  // Alveolar sounds (舌尖音)
+  { py:'d', pronounce:'dē', example:'得', emoji:'🐬', group:'alveolar', groupLabel:'舌尖音' },
+  { py:'t', pronounce:'tē', example:'特', emoji:'🐯', group:'alveolar', groupLabel:'舌尖音' },
+  { py:'n', pronounce:'nē', example:'呢', emoji:'🐦', group:'alveolar', groupLabel:'舌尖音' },
+  { py:'l', pronounce:'lē', example:'勒', emoji:'🦁', group:'alveolar', groupLabel:'舌尖音' },
+  // Velar sounds (舌根音)
+  { py:'g', pronounce:'gē', example:'哥', emoji:'🦍', group:'velar', groupLabel:'舌根音' },
+  { py:'k', pronounce:'kē', example:'科', emoji:'🦘', group:'velar', groupLabel:'舌根音' },
+  { py:'h', pronounce:'hē', example:'喝', emoji:'🦛', group:'velar', groupLabel:'舌根音' },
+  // Palatal sounds (舌面音)
+  { py:'j', pronounce:'jī', example:'基', emoji:'🐥', group:'palatal', groupLabel:'舌面音' },
+  { py:'q', pronounce:'qī', example:'欺', emoji:'👑', group:'palatal', groupLabel:'舌面音' },
+  { py:'x', pronounce:'xī', example:'希', emoji:'⭐', group:'palatal', groupLabel:'舌面音' },
+  // Retroflex sounds (翘舌音)
+  { py:'zh', pronounce:'zhī', example:'知', emoji:'🕷️', group:'retroflex', groupLabel:'翘舌音' },
+  { py:'ch', pronounce:'chī', example:'吃', emoji:'🍒', group:'retroflex', groupLabel:'翘舌音' },
+  { py:'sh', pronounce:'shī', example:'诗', emoji:'🐑', group:'retroflex', groupLabel:'翘舌音' },
+  { py:'r', pronounce:'rī',  example:'日', emoji:'🌹', group:'retroflex', groupLabel:'翘舌音' },
+  // Dental sibilants (平舌音)
+  { py:'z', pronounce:'zī',  example:'资', emoji:'🦓', group:'dental', groupLabel:'平舌音' },
+  { py:'c', pronounce:'cī',  example:'雌', emoji:'🌵', group:'dental', groupLabel:'平舌音' },
+  { py:'s', pronounce:'sī',  example:'思', emoji:'🐍', group:'dental', groupLabel:'平舌音' },
+  // Semi-vowels (半元音)
+  { py:'y', pronounce:'yī',  example:'衣', emoji:'🪀', group:'semivowel', groupLabel:'半元音' },
+  { py:'w', pronounce:'wū',  example:'乌', emoji:'🐋', group:'semivowel', groupLabel:'半元音' }
+];
+
+const INIT_GROUPS = ['all','labial','alveolar','velar','palatal','retroflex','dental','semivowel'];
+const INIT_GROUP_LABELS = {
+  all:'全部声母', labial:'唇音 b/p/m/f', alveolar:'舌尖音 d/t/n/l',
+  velar:'舌根音 g/k/h', palatal:'舌面音 j/q/x',
+  retroflex:'翘舌音 zh/ch/sh/r', dental:'平舌音 z/c/s', semivowel:'半元音 y/w'
+};
+
+const FINALS_DATA = {
+  single: {
+    label: '🔤 单韵母', emoji: '🔤',
+    items: [
+      { py:'a',  tones:['ā','á','ǎ','à'],    examples:['啊','啊','啊','啊'],  emoji:'🅰️' },
+      { py:'o',  tones:['ō','ó','ǒ','ò'],    examples:['哦','哦','哦','哦'],  emoji:'🅾️' },
+      { py:'e',  tones:['ē','é','ě','è'],    examples:['鹅','鹅','恶','饿'],  emoji:'🦢' },
+      { py:'i',  tones:['ī','í','ǐ','ì'],    examples:['衣','姨','椅','亿'],  emoji:'👗' },
+      { py:'u',  tones:['ū','ú','ǔ','ù'],    examples:['乌','无','五','雾'],  emoji:'☂️' },
+      { py:'ü',  tones:['ǖ','ǘ','ǚ','ǜ'],    examples:['迂','鱼','雨','玉'],  emoji:'🐟' }
+    ]
+  },
+  compound: {
+    label: '🔗 复韵母', emoji: '🔗',
+    items: [
+      { py:'ai', tones:['āi','ái','ǎi','ài'], examples:['哀','癌','矮','爱'], emoji:'❤️' },
+      { py:'ei', tones:['ēi','éi','ěi','èi'], examples:['诶','诶','诶','诶'], emoji:'🥚' },
+      { py:'ui', tones:['uī','uí','uǐ','uì'], examples:['威','围','尾','味'], emoji:'🏃' },
+      { py:'ao', tones:['āo','áo','ǎo','ào'], examples:['凹','熬','袄','奥'], emoji:'🐱' },
+      { py:'ou', tones:['ōu','óu','ǒu','òu'], examples:['欧','藕','偶','沤'], emoji:'🦉' },
+      { py:'iu', tones:['iū','iú','iǔ','iù'], examples:['优','油','有','又'], emoji:'🏊' },
+      { py:'ie', tones:['iē','ié','iě','iè'], examples:['耶','爷','也','夜'], emoji:'🍃' },
+      { py:'üe',tones:['üē','üé','üě','üè'], examples:['约','月','雪','乐'], emoji:'🌙' },
+      { py:'er', tones:['ēr','ér','ěr','èr'], examples:['儿','而','耳','二'], emoji:'👂' }
+    ]
+  },
+  nasal: {
+    label: '👃 鼻韵母', emoji: '👃',
+    items: [
+      { py:'an',  tones:['ān','án','ǎn','àn'],   examples:['安','南','俺','暗'], emoji:'⚓' },
+      { py:'en',  tones:['ēn','én','ěn','èn'],   examples:['恩','门','本','笨'], emoji:'✉️' },
+      { py:'in',  tones:['īn','ín','ǐn','ìn'],   examples:['音','银','引','印'], emoji:'🎵' },
+      { py:'un',  tones:['ūn','ún','ǔn','ùn'],   examples:['温','文','稳','问'], emoji:'🌡️' },
+      { py:'ün',  tones:['ǖn','ǘn','ǚn','ǜn'],   examples:['晕','云','允','运'], emoji:'☁️' },
+      { py:'ang', tones:['āng','áng','ǎng','àng'], examples:['昂','昂','昂','盎'], emoji:'🦆' },
+      { py:'eng', tones:['ēng','éng','ěng','èng'], examples:['灯','朋','冷','更'], emoji:'💡' },
+      { py:'ing', tones:['īng','íng','ǐng','ìng'], examples:['英','赢','影','硬'], emoji:'🦅' },
+      { py:'ong', tones:['ōng','óng','ǒng','òng'], examples:['东','红','总','送'], emoji:'🐉' }
+    ]
+  },
+  whole: {
+    label: '📦 整体认读', emoji: '📦',
+    items: [
+      { py:'zhi',  tones:['zhī','zhí','zhǐ','zhì'],  examples:['知','直','纸','志'],  emoji:'🕷️' },
+      { py:'chi',  tones:['chī','chí','chǐ','chì'],  examples:['吃','迟','尺','翅'],  emoji:'🍕' },
+      { py:'shi',  tones:['shī','shí','shǐ','shì'],  examples:['师','十','使','是'],  emoji:'🦁' },
+      { py:'ri',   tones:['rī','rí','rǐ','rì'],     examples:['日','日','日','日'],   emoji:'☀️' },
+      { py:'zi',   tones:['zī','zí','zǐ','zì'],     examples:['资','紫','子','字'],   emoji:'🟣' },
+      { py:'ci',   tones:['cī','cí','cǐ','cì'],     examples:['词','瓷','此','次'],   emoji:'🔤' },
+      { py:'si',   tones:['sī','sí','sǐ','sì'],     examples:['思','死','四','四'],   emoji:'4️⃣' },
+      { py:'yi',   tones:['yī','yí','yǐ','yì'],     examples:['一','姨','椅','亿'],   emoji:'1️⃣' },
+      { py:'wu',   tones:['wū','wú','wǔ','wù'],     examples:['乌','无','五','雾'],   emoji:'5️⃣' },
+      { py:'yu',   tones:['yū','yú','yǔ','yù'],     examples:['迂','鱼','雨','玉'],   emoji:'🐟' },
+      { py:'ye',   tones:['yē','yé','yě','yè'],     examples:['耶','爷','也','夜'],   emoji:'🌴' },
+      { py:'yue',  tones:['yuē','yué','yuě','yuè'],  examples:['约','月','雪','乐'],   emoji:'🌙' },
+      { py:'yuan', tones:['yuān','yuán','yuǎn','yuàn'],examples:['冤','圆','远','院'], emoji:'⭕' },
+      { py:'yin',  tones:['yīn','yín','yǐn','yìn'],  examples:['音','银','引','印'],   emoji:'🎶' },
+      { py:'yun',  tones:['yūn','yún','yǔn','yùn'],  examples:['晕','云','允','运'],   emoji:'☁️' },
+      { py:'ying', tones:['yīng','yíng','yǐng','yìng'],examples:['英','赢','影','硬'], emoji:'🦅' }
+    ]
+  }
+};
+
+// ===== STATE =====
+const synth = window.speechSynthesis;
+let voices = [];
+let autoInitTimer = null;
+let autoFinalsTimer = null;
+let currentInitGroup = 'all';
+let currentFinalsCat = 'single';
+let currentTone = 0; // 0=all, 1-4=tone index
+let quizDifficulty = 'normal';
+let currentQuizMode = 'initial';
+let quizQuestions = [];
+let quizIndex = 0;
+let quizScore = 0;
+
+// ===== SPEECH =====
+function loadVoices() {
+  voices = synth.getVoices();
+  if (voices.length === 0) {
+    setTimeout(() => { voices = synth.getVoices(); }, 200);
+  }
+}
+loadVoices();
+if (speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function getChineseVoice() {
+  const zh = voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+  const pref = zh.find(v =>
+    v.name.includes('Google') ||
+    v.name.includes('Microsoft') ||
+    v.name.includes('Ting-Ting')
+  );
+  return pref || zh[0] || voices[0];
+}
+
+function speak(text, callback) {
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN';
+  u.rate = 0.75;
+  u.pitch = 1.1;
+  const voice = getChineseVoice();
+  if (voice) u.voice = voice;
+  if (callback) u.onend = callback;
+  synth.speak(u);
+}
+
+// ===== NAVIGATION =====
+function hideAllPages() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+}
+function showNav(title) {
+  document.getElementById('navBar').classList.remove('hidden');
+  document.getElementById('navTitle').textContent = title;
+}
+function hideNav() {
+  document.getElementById('navBar').classList.add('hidden');
+}
+function goHome() {
+  stopAutoInit();
+  stopFinalsAuto();
+  hideAllPages();
+  hideNav();
+  document.getElementById('homePage').classList.add('active');
+}
+
+// ===== INITIALS PAGE =====
+function showInitials() {
+  stopAutoInit();
+  hideAllPages();
+  showNav('声母学习');
+  document.getElementById('initialsPage').classList.add('active');
+  renderInitials();
+}
+
+function renderInitials() {
+  const grid = document.getElementById('initialsGrid');
+  const filtered = currentInitGroup === 'all'
+    ? INITIALS
+    : INITIALS.filter(item => item.group === currentInitGroup);
+  grid.innerHTML = filtered.map((item, i) =>
+    `<div class="init-card" id="init-${i}" onclick="speakInitial('${item.example}',${i})">
+      <span class="init-emoji">${item.emoji}</span>
+      <span class="init-py">${item.py}</span>
+      <span class="init-pronounce">${item.pronounce}</span>
+    </div>`
+  ).join('');
+}
+
+function speakInitial(text, idx) {
+  stopAutoInit();
+  speak(text);
+  highlightInitial(idx);
+}
+
+function highlightInitial(idx) {
+  document.querySelectorAll('.init-card').forEach(c => c.classList.remove('highlight'));
+  const el = document.getElementById('init-' + idx);
+  if (el) el.classList.add('highlight');
+}
+
+function toggleInitGroup() {
+  const curIdx = INIT_GROUPS.indexOf(currentInitGroup);
+  currentInitGroup = INIT_GROUPS[(curIdx + 1) % INIT_GROUPS.length];
+  document.getElementById('initGroupBtn').textContent = INIT_GROUP_LABELS[currentInitGroup];
+  renderInitials();
+}
+
+function autoPlayInitials() {
+  stopAutoInit();
+  const filtered = currentInitGroup === 'all'
+    ? INITIALS
+    : INITIALS.filter(item => item.group === currentInitGroup);
+  let i = 0;
+  document.getElementById('autoPlayInitBtn').classList.add('hidden');
+  document.getElementById('stopInitBtn').classList.remove('hidden');
+
+  function playNext() {
+    if (i >= filtered.length) {
+      stopAutoInit();
+      return;
+    }
+    highlightInitial(i);
+    speak(filtered[i].example, () => {
+      i++;
+      autoInitTimer = setTimeout(playNext, 800);
+    });
+  }
+  playNext();
+}
+
+function stopAutoInit() {
+  if (autoInitTimer) { clearTimeout(autoInitTimer); autoInitTimer = null; }
+  synth.cancel();
+  document.getElementById('autoPlayInitBtn').classList.remove('hidden');
+  document.getElementById('stopInitBtn').classList.add('hidden');
+  document.querySelectorAll('.init-card').forEach(c => c.classList.remove('highlight'));
+}
+
+// ===== FINALS PAGE =====
+function showFinals() {
+  stopFinalsAuto();
+  hideAllPages();
+  showNav('韵母学习');
+  document.getElementById('finalsPage').classList.add('active');
+  renderFinalsCatTabs();
+  renderFinals();
+}
+
+function renderFinalsCatTabs() {
+  const tabs = document.getElementById('finalsCatTabs');
+  tabs.innerHTML = Object.entries(FINALS_DATA).map(([key, data]) =>
+    `<button class="cat-tab${key === currentFinalsCat ? ' active' : ''}" onclick="switchFinalsCategory('${key}')">${data.label}</button>`
+  ).join('');
+}
+
+function switchFinalsCategory(key) {
+  currentFinalsCat = key;
+  stopFinalsAuto();
+  renderFinalsCatTabs();
+  renderFinals();
+}
+
+function renderFinals() {
+  const grid = document.getElementById('finalsGrid');
+  const items = FINALS_DATA[currentFinalsCat].items;
+  const toneClass = currentTone > 0 ? ' tone-' + currentTone : '';
+
+  grid.innerHTML = items.map((item, i) => {
+    let displayPy, displayExample;
+    if (currentTone === 0) {
+      displayPy = item.py;
+      displayExample = item.examples[0];
+    } else {
+      displayPy = item.tones[currentTone - 1];
+      displayExample = item.examples[currentTone - 1];
+    }
+    return `<div class="final-card${toneClass}" id="final-${i}" onclick="speakFinal(${i})">
+      <span class="final-emoji">${item.emoji}</span>
+      <span class="final-py">${displayPy}</span>
+      <span class="final-example">${displayExample}</span>
+    </div>`;
+  }).join('');
+}
+
+function speakFinal(idx) {
+  stopFinalsAuto();
+  const item = FINALS_DATA[currentFinalsCat].items[idx];
+  const text = currentTone === 0 ? item.examples[0] : item.examples[currentTone - 1];
+  speak(text);
+  highlightFinal(idx);
+}
+
+function highlightFinal(idx) {
+  document.querySelectorAll('.final-card').forEach(c => { c.classList.remove('highlight'); c.classList.remove('bounce'); });
+  const el = document.getElementById('final-' + idx);
+  if (el) { el.classList.add('highlight'); el.classList.add('bounce'); }
+}
+
+function toggleTone(tone) {
+  currentTone = tone;
+  for (let i = 0; i <= 4; i++) {
+    const btn = document.getElementById('toneBtn' + i);
+    btn.classList.remove('active', 't1', 't2', 't3', 't4');
+    if (i === tone) {
+      btn.classList.add('active');
+      if (tone > 0) btn.classList.add('t' + tone);
+    }
+  }
+  renderFinals();
+}
+
+function autoPlayFinals() {
+  stopFinalsAuto();
+  const items = FINALS_DATA[currentFinalsCat].items;
+  let i = 0;
+  document.getElementById('autoPlayFinalsBtn').classList.add('hidden');
+  document.getElementById('stopFinalsBtn').classList.remove('hidden');
+
+  function playNext() {
+    if (i >= items.length) {
+      stopFinalsAuto();
+      return;
+    }
+    highlightFinal(i);
+    const text = currentTone === 0 ? items[i].examples[0] : items[i].examples[currentTone - 1];
+    speak(text, () => {
+      i++;
+      autoFinalsTimer = setTimeout(playNext, 1000);
+    });
+  }
+  playNext();
+}
+
+function stopFinalsAuto() {
+  if (autoFinalsTimer) { clearTimeout(autoFinalsTimer); autoFinalsTimer = null; }
+  synth.cancel();
+  document.getElementById('autoPlayFinalsBtn').classList.remove('hidden');
+  document.getElementById('stopFinalsBtn').classList.add('hidden');
+  document.querySelectorAll('.final-card').forEach(c => { c.classList.remove('highlight'); c.classList.remove('bounce'); });
+}
+
+// ===== QUIZ =====
+function setDifficulty(level) {
+  quizDifficulty = level;
+  document.getElementById('diffEasy').classList.toggle('active', level === 'easy');
+  document.getElementById('diffNormal').classList.toggle('active', level === 'normal');
+}
+
+function showQuizSetup() {
+  synth.cancel();
+  hideAllPages();
+  showNav('趣味练习');
+  document.getElementById('quizPage').classList.add('active');
+  document.getElementById('quizSetup').classList.remove('hidden');
+  document.getElementById('quizActive').classList.add('hidden');
+  document.getElementById('quizComplete').classList.add('hidden');
+}
+
+function generateQuestions(mode) {
+  const questions = [];
+  const total = 10;
+  const optCount = quizDifficulty === 'easy' ? 2 : 4;
+
+  if (mode === 'initial') {
+    for (let i = 0; i < total; i++) {
+      const correct = INITIALS[Math.floor(Math.random() * INITIALS.length)];
+      const pool = [correct];
+      while (pool.length < optCount) {
+        const r = INITIALS[Math.floor(Math.random() * INITIALS.length)];
+        if (!pool.find(x => x.py === r.py)) pool.push(r);
+      }
+      shuffle(pool);
+      questions.push({ type:'initial', correct, options:pool, speakText:correct.example });
+    }
+  } else {
+    // Final mode
+    const allItems = [];
+    Object.values(FINALS_DATA).forEach(cat => {
+      cat.items.forEach(item => allItems.push(item));
+    });
+    for (let i = 0; i < total; i++) {
+      const correct = allItems[Math.floor(Math.random() * allItems.length)];
+      const toneIdx = Math.floor(Math.random() * 4);
+      const pool = [correct];
+      while (pool.length < optCount) {
+        const r = allItems[Math.floor(Math.random() * allItems.length)];
+        if (!pool.find(x => x.py === r.py)) pool.push(r);
+      }
+      shuffle(pool);
+      questions.push({
+        type:'final',
+        correct,
+        toneIdx,
+        options:pool,
+        speakText:correct.examples[toneIdx],
+        displayLabel:correct.tones[toneIdx]
+      });
+    }
+  }
+  return questions;
+}
+
+function shuffle(arr) {
+  for (let j = arr.length - 1; j > 0; j--) {
+    const k = Math.floor(Math.random() * (j + 1));
+    [arr[j], arr[k]] = [arr[k], arr[j]];
+  }
+}
+
+function startQuiz(mode) {
+  if (mode) currentQuizMode = mode;
+  synth.cancel();
+  quizQuestions = generateQuestions(currentQuizMode);
+  quizIndex = 0;
+  quizScore = 0;
+  document.getElementById('quizSetup').classList.add('hidden');
+  document.getElementById('quizComplete').classList.add('hidden');
+  document.getElementById('quizActive').classList.remove('hidden');
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  if (quizIndex >= quizQuestions.length) return showQuizComplete();
+  const q = quizQuestions[quizIndex];
+  document.getElementById('quizProgressText').textContent = '第' + (quizIndex + 1) + '题/共' + quizQuestions.length + '题';
+  document.getElementById('progressBarFill').style.width = ((quizIndex / quizQuestions.length) * 100) + '%';
+  document.getElementById('quizScoreDisplay').textContent = quizScore;
+
+  const optsDiv = document.getElementById('quizOptions');
+  optsDiv.innerHTML = q.options.map((opt, i) => {
+    let label;
+    if (q.type === 'initial') {
+      label = opt.py;
+    } else {
+      label = opt.tones[q.toneIdx];
+    }
+    return '<button class="quiz-option" id="qopt-' + i + '" onclick="answerQuiz(' + i + ')">' + label + '</button>';
+  }).join('');
+
+  setTimeout(() => speakQuizQuestion(q), 400);
+}
+
+function speakQuizQuestion(q) {
+  speak(q.speakText);
+}
+
+function replayQuizSound() {
+  if (quizIndex < quizQuestions.length) {
+    speakQuizQuestion(quizQuestions[quizIndex]);
+  }
+}
+
+function answerQuiz(idx) {
+  const q = quizQuestions[quizIndex];
+  const selected = q.options[idx];
+  const isCorrect = q.type === 'initial'
+    ? selected.py === q.correct.py
+    : selected.py === q.correct.py && selected.tones[q.toneIdx] === q.correct.tones[q.toneIdx];
+
+  document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+
+  if (isCorrect) {
+    quizScore++;
+    document.getElementById('quizScoreDisplay').textContent = quizScore;
+    document.getElementById('qopt-' + idx).classList.add('correct');
+    setTimeout(() => {
+      quizIndex++;
+      renderQuizQuestion();
+    }, 900);
+  } else {
+    document.getElementById('qopt-' + idx).classList.add('wrong');
+    setTimeout(() => {
+      speakQuizQuestion(q);
+      document.querySelectorAll('.quiz-option').forEach(b => b.disabled = false);
+      document.getElementById('qopt-' + idx).classList.remove('wrong');
+    }, 600);
+  }
+}
+
+function showQuizComplete() {
+  document.getElementById('quizActive').classList.add('hidden');
+  document.getElementById('quizComplete').classList.remove('hidden');
+  document.getElementById('completeScore').textContent = '得分: ' + quizScore + ' / ' + quizQuestions.length;
+
+  let stars = '';
+  if (quizScore === quizQuestions.length) stars = '⭐⭐⭐';
+  else if (quizScore >= 7) stars = '⭐⭐';
+  else if (quizScore >= 4) stars = '⭐';
+  else stars = '💪';
+  document.getElementById('completeStars').textContent = stars;
+}
+
+// ===== PRIME SPEECH (iOS/Chrome workaround) =====
+document.addEventListener('click', function primeSpeech() {
+  const u = new SpeechSynthesisUtterance('');
+  u.volume = 0;
+  u.rate = 1.5;
+  synth.speak(u);
+}, { once: true });
+
+// Pre-render on load
+renderInitials();
+renderFinalsCatTabs();
+renderFinals();
+</script>
+</body>
+</html>
