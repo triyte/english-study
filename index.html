@@ -570,6 +570,10 @@ body {
   <!-- ====== PHONICS PAGE ====== -->
   <div id="phonicsPage" class="page">
     <div class="category-tabs" id="phonicsTabs"></div>
+    <div class="alphabet-toolbar">
+      <button id="autoPlayPhonicsBtn" class="tool-btn" onclick="autoPlayPhonics()">&#9654; 逐个播放</button>
+      <button id="stopPhonicsBtn" class="tool-btn hidden" onclick="stopPhonicsAuto()">&#9632; 停止</button>
+    </div>
     <div id="phonicsGrid" class="phonics-grid"></div>
   </div>
 
@@ -1106,6 +1110,34 @@ function stopPhonicsAuto() {
   if (playBtn) playBtn.classList.remove('hidden');
   if (stopBtn) stopBtn.classList.add('hidden');
   document.querySelectorAll('.phonics-card').forEach(c => c.classList.remove('highlight'));
+}
+
+function autoPlayPhonics() {
+  stopPhonicsAuto();
+  const token = phonicsAutoToken;
+  const items = PHONICS_DATA[currentPhonicsGroup].items;
+  let i = 0;
+  document.getElementById('autoPlayPhonicsBtn').classList.add('hidden');
+  document.getElementById('stopPhonicsBtn').classList.remove('hidden');
+
+  function playNext() {
+    if (token !== phonicsAutoToken) return;
+    if (i >= items.length) { stopPhonicsAuto(); return; }
+    highlightPhonics(i);
+    const item = items[i];
+    speak(item.say, () => {
+      if (token !== phonicsAutoToken) return;
+      setTimeout(() => {
+        if (token !== phonicsAutoToken) return;
+        speak(item.examples[0].en, () => {
+          if (token !== phonicsAutoToken) return;
+          i++;
+          phonicsAutoTimer = setTimeout(playNext, 700);
+        });
+      }, 250);
+    });
+  }
+  playNext();
 }
 
 // ===== QUIZ =====
