@@ -593,6 +593,9 @@ body {
         <button class="quiz-mode-card" style="background:linear-gradient(135deg,var(--c4),#40C057)" onclick="startQuiz('word')">
           <span class="quiz-mode-icon">&#128218;</span>单词练习
         </button>
+        <button class="quiz-mode-card" style="background:linear-gradient(135deg,var(--c7),var(--c1))" onclick="startQuiz('phonics')">
+          <span class="quiz-mode-icon">&#127925;</span>音标练习
+        </button>
       </div>
     </div>
     <!-- Active Quiz -->
@@ -1112,6 +1115,26 @@ function stopPhonicsAuto() {
   document.querySelectorAll('.phonics-card').forEach(c => c.classList.remove('highlight'));
 }
 
+function generatePhonicsQuestions(total) {
+  const all = phonicsAllItems();
+  const optionCount = quizDifficulty === 'easy' ? 2 : 4;
+  const questions = [];
+  for (let i = 0; i < total; i++) {
+    const correct = all[Math.floor(Math.random() * all.length)];
+    const spokenWord = correct.examples[Math.floor(Math.random() * correct.examples.length)];
+    const distractors = shuffleArray(all.filter(item =>
+      item !== correct && !wordHasPhoneme(spokenWord.ipa, item)
+    )).slice(0, optionCount - 1);
+    questions.push({
+      type: 'phonics',
+      correct,
+      spokenWord,
+      options: shuffleArray([correct, ...distractors])
+    });
+  }
+  return questions;
+}
+
 function autoPlayPhonics() {
   stopPhonicsAuto();
   const token = phonicsAutoToken;
@@ -1160,6 +1183,7 @@ function showQuizSetup() {
 function generateQuestions(mode) {
   const questions = [];
   const total = 10;
+  if (mode === 'phonics') return generatePhonicsQuestions(total);
   if (mode === 'letter') {
     for (let i = 0; i < total; i++) {
       const correct = LETTERS[Math.floor(Math.random() * 26)];
@@ -1215,8 +1239,14 @@ function renderQuizQuestion() {
 
   const optsDiv = document.getElementById('quizOptions');
   optsDiv.innerHTML = q.options.map((opt, i) => {
-    const label = q.type === 'letter' ? opt : opt.en;
-    const emojiPart = q.type === 'word' ? `<span style="font-size:34px">${opt.emoji}</span>` : '';
+    const label = q.type === 'letter' ? opt
+      : q.type === 'word' ? opt.en
+      : opt.ipa;
+    const emojiPart = q.type === 'word'
+      ? `<span style="font-size:34px">${opt.emoji}</span>`
+      : q.type === 'phonics'
+        ? `<span style="font-size:34px">${opt.examples[0].emoji}</span>`
+        : '';
     return `<button class="quiz-option" id="qopt-${i}" onclick="answerQuiz(${i})">${emojiPart} ${label}</button>`;
   }).join('');
 
@@ -1225,7 +1255,9 @@ function renderQuizQuestion() {
 }
 
 function speakQuizQuestion(q) {
-  const text = q.type === 'letter' ? q.correct : q.correct.en;
+  const text = q.type === 'letter' ? q.correct
+    : q.type === 'word' ? q.correct.en
+    : q.spokenWord.en;
   speak(text);
 }
 
@@ -1240,7 +1272,9 @@ function answerQuiz(idx) {
   const selected = q.options[idx];
   const isCorrect = q.type === 'letter'
     ? selected === q.correct
-    : selected.en === q.correct.en;
+    : q.type === 'word'
+      ? selected.en === q.correct.en
+      : selected.ipa === q.correct.ipa;
 
   // Disable all options
   document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
