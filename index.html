@@ -1072,9 +1072,16 @@ function renderPhonics() {
 
 function speakPhonics(idx) {
   stopPhonicsAuto();
+  const token = phonicsAutoToken;
   const item = PHONICS_DATA[currentPhonicsGroup].items[idx];
   highlightPhonics(idx);
-  speak(item.say, () => setTimeout(() => speak(item.examples[0].en), 250));
+  speak(item.say, () => {
+    if (token !== phonicsAutoToken) return;
+    setTimeout(() => {
+      if (token !== phonicsAutoToken) return;
+      speak(item.examples[0].en);
+    }, 250);
+  });
 }
 
 function speakExample(idx, exampleIdx) {
