@@ -582,6 +582,144 @@ const WORD_DATA = {
   }
 };
 
+const PHONICS_DATA = {
+  vowels: {
+    label: '元音',
+    items: [
+      { ipa: '/i/', say: 'ee', examples: [
+        { en: 'bee', cn: '蜜蜂', emoji: '🐝', ipa: '/bi/' },
+        { en: 'green', cn: '绿色', emoji: '💚', ipa: '/grin/' },
+        { en: 'tree', cn: '树', emoji: '🌳', ipa: '/tri/' }
+      ]},
+      { ipa: '/ɪ/', say: 'ih', examples: [
+        { en: 'fish', cn: '鱼', emoji: '🐟', ipa: '/fɪʃ/' },
+        { en: 'pig', cn: '猪', emoji: '🐷', ipa: '/pɪg/' },
+        { en: 'sit', cn: '坐', emoji: '🪑', ipa: '/sɪt/' }
+      ]},
+      { ipa: '/ɛ/', say: 'eh', examples: [
+        { en: 'red', cn: '红色', emoji: '❤️', ipa: '/rɛd/' },
+        { en: 'egg', cn: '鸡蛋', emoji: '🥚', ipa: '/ɛg/' },
+        { en: 'bed', cn: '床', emoji: '🛏️', ipa: '/bɛd/' }
+      ]},
+      { ipa: '/æ/', say: 'ah', examples: [
+        { en: 'cat', cn: '猫', emoji: '🐱', ipa: '/kæt/' },
+        { en: 'apple', cn: '苹果', emoji: '🍎', ipa: '/ˈæpəl/' },
+        { en: 'hat', cn: '帽子', emoji: '🎩', ipa: '/hæt/' }
+      ]},
+      { ipa: '/ɑ/', say: 'ahh', examples: [
+        { en: 'star', cn: '星星', emoji: '⭐', ipa: '/stɑr/' },
+        { en: 'car', cn: '汽车', emoji: '🚗', ipa: '/kɑr/' },
+        { en: 'father', cn: '爸爸', emoji: '👨', ipa: '/ˈfɑðər/' }
+      ]},
+      { ipa: '/ʌ/', say: 'uh', examples: [
+        { en: 'duck', cn: '鸭子', emoji: '🦆', ipa: '/dʌk/' },
+        { en: 'cup', cn: '杯子', emoji: '🥤', ipa: '/kʌp/' },
+        { en: 'sun', cn: '太阳', emoji: '☀️', ipa: '/sʌn/' }
+      ]},
+      { ipa: '/ɔ/', say: 'aw', examples: [
+        { en: 'dog', cn: '狗', emoji: '🐶', ipa: '/dɔg/' },
+        { en: 'ball', cn: '球', emoji: '⚽', ipa: '/bɔl/' },
+        { en: 'horse', cn: '马', emoji: '🐴', ipa: '/hɔrs/' }
+      ]},
+      { ipa: '/ʊ/', say: 'uu', examples: [
+        { en: 'book', cn: '书', emoji: '📖', ipa: '/bʊk/' },
+        { en: 'cook', cn: '厨师', emoji: '👨‍🍳', ipa: '/kʊk/' },
+        { en: 'foot', cn: '脚', emoji: '🦶', ipa: '/fʊt/' }
+      ]},
+      { ipa: '/u/', say: 'oo', examples: [
+        { en: 'moon', cn: '月亮', emoji: '🌙', ipa: '/mun/' },
+        { en: 'blue', cn: '蓝色', emoji: '💙', ipa: '/blu/' },
+        { en: 'zoo', cn: '动物园', emoji: '🦒', ipa: '/zu/' }
+      ]},
+      { ipa: '/ɜr/', say: 'er', examples: [
+        { en: 'bird', cn: '鸟', emoji: '🐦', ipa: '/bɜrd/' },
+        { en: 'purple', cn: '紫色', emoji: '💜', ipa: '/ˈpɜrpəl/' },
+        { en: 'girl', cn: '女孩', emoji: '👧', ipa: '/gɜrl/' }
+      ]},
+      { ipa: '/eɪ/', say: 'ay', examples: [
+        { en: 'cake', cn: '蛋糕', emoji: '🎂', ipa: '/keɪk/' },
+        { en: 'game', cn: '游戏', emoji: '🎮', ipa: '/geɪm/' },
+        { en: 'name', cn: '名字', emoji: '🏷️', ipa: '/neɪm/' }
+      ]}
+    ]
+  },
+  consonants: {
+    label: '辅音',
+    items: [
+      { ipa: '/b/', say: 'buh', examples: [
+        { en: 'ball', cn: '球', emoji: '⚽', ipa: '/bɔl/' },
+        { en: 'bear', cn: '熊', emoji: '🐻', ipa: '/bɛr/' },
+        { en: 'blue', cn: '蓝色', emoji: '💙', ipa: '/blu/' }
+      ]},
+      { ipa: '/p/', say: 'puh', examples: [
+        { en: 'pig', cn: '猪', emoji: '🐷', ipa: '/pɪg/' },
+        { en: 'peach', cn: '桃子', emoji: '🍑', ipa: '/pitʃ/' },
+        { en: 'pink', cn: '粉色', emoji: '💗', ipa: '/pɪŋk/' }
+      ]},
+      { ipa: '/m/', say: 'mmm', examples: [
+        { en: 'moon', cn: '月亮', emoji: '🌙', ipa: '/mun/' },
+        { en: 'mango', cn: '芒果', emoji: '🥭', ipa: '/ˈmæŋgoʊ/' },
+        { en: 'monkey', cn: '猴子', emoji: '🐒', ipa: '/ˈmʌŋki/' }
+      ]},
+      { ipa: '/f/', say: 'fff', examples: [
+        { en: 'fish', cn: '鱼', emoji: '🐟', ipa: '/fɪʃ/' },
+        { en: 'five', cn: '五', emoji: '✋', ipa: '/faɪv/' },
+        { en: 'frog', cn: '青蛙', emoji: '🐸', ipa: '/frɔg/' }
+      ]},
+      { ipa: '/d/', say: 'duh', examples: [
+        { en: 'dog', cn: '狗', emoji: '🐶', ipa: '/dɔg/' },
+        { en: 'duck', cn: '鸭子', emoji: '🦆', ipa: '/dʌk/' },
+        { en: 'red', cn: '红色', emoji: '❤️', ipa: '/rɛd/' }
+      ]},
+      { ipa: '/t/', say: 'tuh', examples: [
+        { en: 'tiger', cn: '老虎', emoji: '🐯', ipa: '/ˈtaɪgər/' },
+        { en: 'ten', cn: '十', emoji: '🔟', ipa: '/tɛn/' },
+        { en: 'cat', cn: '猫', emoji: '🐱', ipa: '/kæt/' }
+      ]},
+      { ipa: '/n/', say: 'nnn', examples: [
+        { en: 'nose', cn: '鼻子', emoji: '👃', ipa: '/noʊz/' },
+        { en: 'nine', cn: '九', emoji: '9️⃣', ipa: '/naɪn/' },
+        { en: 'sun', cn: '太阳', emoji: '☀️', ipa: '/sʌn/' }
+      ]},
+      { ipa: '/l/', say: 'lll', examples: [
+        { en: 'lion', cn: '狮子', emoji: '🦁', ipa: '/ˈlaɪən/' },
+        { en: 'leg', cn: '腿', emoji: '🦵', ipa: '/lɛg/' },
+        { en: 'yellow', cn: '黄色', emoji: '💛', ipa: '/ˈyɛloʊ/' }
+      ]},
+      { ipa: '/g/', say: 'guh', examples: [
+        { en: 'goat', cn: '山羊', emoji: '🐐', ipa: '/goʊt/' },
+        { en: 'green', cn: '绿色', emoji: '💚', ipa: '/grin/' },
+        { en: 'grape', cn: '葡萄', emoji: '🍇', ipa: '/greɪp/' }
+      ]},
+      { ipa: '/k/', say: 'kuh', examples: [
+        { en: 'cat', cn: '猫', emoji: '🐱', ipa: '/kæt/' },
+        { en: 'kite', cn: '风筝', emoji: '🪁', ipa: '/kaɪt/' },
+        { en: 'duck', cn: '鸭子', emoji: '🦆', ipa: '/dʌk/' }
+      ]},
+      { ipa: '/h/', say: 'huh', examples: [
+        { en: 'hat', cn: '帽子', emoji: '🎩', ipa: '/hæt/' },
+        { en: 'horse', cn: '马', emoji: '🐴', ipa: '/hɔrs/' },
+        { en: 'hello', cn: '你好', emoji: '👋', ipa: '/hɛˈloʊ/' }
+      ]},
+      { ipa: '/s/', say: 'sss', examples: [
+        { en: 'sun', cn: '太阳', emoji: '☀️', ipa: '/sʌn/' },
+        { en: 'star', cn: '星星', emoji: '⭐', ipa: '/stɑr/' },
+        { en: 'six', cn: '六', emoji: '6️⃣', ipa: '/sɪks/' }
+      ]},
+      { ipa: '/w/', say: 'wuh', examples: [
+        { en: 'water', cn: '水', emoji: '💧', ipa: '/ˈwɔtər/' },
+        { en: 'watermelon', cn: '西瓜', emoji: '🍉', ipa: '/ˈwɔtərmɛlən/' },
+        { en: 'window', cn: '窗户', emoji: '🪟', ipa: '/ˈwɪndoʊ/' }
+      ]},
+      { ipa: '/r/', say: 'ruh', examples: [
+        { en: 'rabbit', cn: '兔子', emoji: '🐰', ipa: '/ˈræbɪt/' },
+        { en: 'red', cn: '红色', emoji: '❤️', ipa: '/rɛd/' },
+        { en: 'rainbow', cn: '彩虹', emoji: '🌈', ipa: '/ˈreɪnboʊ/' }
+      ]}
+    ]
+  }
+};
+
 // ===== STATE =====
 const synth = window.speechSynthesis;
 let voices = [];
