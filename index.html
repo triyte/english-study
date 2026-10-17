@@ -267,6 +267,65 @@ body {
 .word-emoji { font-size: 48px; display: block; margin-bottom: 6px; }
 .word-text { font-size: var(--font-md); font-weight: 700; color: var(--text); }
 
+/* ===== Phonics Page ===== */
+.phonics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+.phonics-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 16px 10px 12px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s, box-shadow 0.12s, background 0.2s;
+  border: 3px solid transparent;
+}
+.phonics-card:hover { transform: scale(1.05); box-shadow: var(--shadow-hover); }
+.phonics-card:active { transform: scale(0.94); }
+.phonics-card.highlight {
+  border-color: var(--c6);
+  background: #F3F0FF;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(177,151,252,0.35);
+}
+.phonics-ipa {
+  display: block;
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--c6);
+  font-family: 'Segoe UI', 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;
+  line-height: 1.1;
+}
+.phonics-emoji { display: block; font-size: 34px; margin: 4px 0 2px; }
+.phonics-word {
+  display: block;
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.phonics-examples {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.phonics-example {
+  padding: 6px 10px;
+  border-radius: 50px;
+  border: 2px solid #E0D7C6;
+  background: #FFFDF7;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+}
+.phonics-example:hover { border-color: var(--c6); color: var(--c6); }
+.phonics-example:active { transform: scale(0.95); }
+
 /* ===== Quiz Page ===== */
 .quiz-setup {
   text-align: center;
@@ -478,6 +537,13 @@ body {
           <span class="home-card-desc">听声音选答案，闯关挑战</span>
         </span>
       </button>
+      <button class="home-card" style="background:linear-gradient(135deg,var(--c7),var(--c1))" onclick="showPhonics()">
+        <span class="home-card-icon">&#127925;</span>
+        <span class="home-card-text">
+          <span class="home-card-label">音标乐园</span>
+          <span class="home-card-desc">认识元音和辅音，听音学发音</span>
+        </span>
+      </button>
     </div>
   </div>
 
@@ -499,6 +565,12 @@ body {
       <button id="stopWordsBtn" class="tool-btn hidden" onclick="stopWordsAuto()">&#9632; 停止</button>
     </div>
     <div id="wordGrid" class="word-grid"></div>
+  </div>
+
+  <!-- ====== PHONICS PAGE ====== -->
+  <div id="phonicsPage" class="page">
+    <div class="category-tabs" id="phonicsTabs"></div>
+    <div id="phonicsGrid" class="phonics-grid"></div>
   </div>
 
   <!-- ====== QUIZ PAGE ====== -->
@@ -732,6 +804,9 @@ let currentQuizMode = 'letter';
 let quizQuestions = [];
 let quizIndex = 0;
 let quizScore = 0;
+let currentPhonicsGroup = 'vowels';
+let phonicsAutoTimer = null;
+let phonicsAutoToken = 0;
 
 // ===== SPEECH =====
 function loadVoices() {
@@ -781,6 +856,7 @@ function hideNav() {
 function goHome() {
   stopAutoPlay();
   stopWordsAuto();
+  stopPhonicsAuto();
   hideAllPages();
   hideNav();
   document.getElementById('homePage').classList.add('active');
@@ -939,6 +1015,90 @@ function stopWordsAuto() {
   document.getElementById('autoPlayWordsBtn').classList.remove('hidden');
   document.getElementById('stopWordsBtn').classList.add('hidden');
   document.querySelectorAll('.word-card').forEach(c => { c.classList.remove('highlight'); c.classList.remove('bounce'); });
+}
+
+// ===== PHONICS =====
+function shuffleArray(arr) {
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function phonicsAllItems() {
+  return [...PHONICS_DATA.vowels.items, ...PHONICS_DATA.consonants.items];
+}
+
+function wordHasPhoneme(wordIpa, item) {
+  return wordIpa.replace(/\//g, '').includes(item.ipa.replace(/\//g, ''));
+}
+
+function showPhonics() {
+  stopAutoPlay();
+  stopWordsAuto();
+  stopPhonicsAuto();
+  hideAllPages();
+  showNav('音标学习');
+  document.getElementById('phonicsPage').classList.add('active');
+  renderPhonics();
+}
+
+function switchPhonicsGroup(key) {
+  currentPhonicsGroup = key;
+  stopPhonicsAuto();
+  renderPhonics();
+}
+
+function renderPhonics() {
+  const data = PHONICS_DATA[currentPhonicsGroup];
+  document.getElementById('phonicsTabs').innerHTML = Object.entries(PHONICS_DATA).map(([key, group]) =>
+    `<button class="cat-tab${key === currentPhonicsGroup ? ' active' : ''}" onclick="switchPhonicsGroup('${key}')">${group.label}</button>`
+  ).join('');
+  document.getElementById('phonicsGrid').innerHTML = data.items.map((item, i) => `
+    <div class="phonics-card" id="phonics-${i}" onclick="speakPhonics(${i})">
+      <span class="phonics-ipa">${item.ipa}</span>
+      <span class="phonics-emoji">${item.examples[0].emoji}</span>
+      <span class="phonics-word">${item.examples[0].en}</span>
+      <div class="phonics-examples">
+        ${item.examples.map((ex, j) =>
+          `<button class="phonics-example" onclick="event.stopPropagation(); speakExample(${i},${j})">${ex.en}</button>`
+        ).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function speakPhonics(idx) {
+  stopPhonicsAuto();
+  const item = PHONICS_DATA[currentPhonicsGroup].items[idx];
+  highlightPhonics(idx);
+  speak(item.say, () => setTimeout(() => speak(item.examples[0].en), 250));
+}
+
+function speakExample(idx, exampleIdx) {
+  stopPhonicsAuto();
+  const item = PHONICS_DATA[currentPhonicsGroup].items[idx];
+  highlightPhonics(idx);
+  speak(item.examples[exampleIdx].en);
+}
+
+function highlightPhonics(idx) {
+  document.querySelectorAll('.phonics-card').forEach(c => c.classList.remove('highlight'));
+  const el = document.getElementById('phonics-' + idx);
+  if (el) el.classList.add('highlight');
+}
+
+function stopPhonicsAuto() {
+  phonicsAutoToken++;
+  if (phonicsAutoTimer) { clearTimeout(phonicsAutoTimer); phonicsAutoTimer = null; }
+  synth.cancel();
+  const playBtn = document.getElementById('autoPlayPhonicsBtn');
+  const stopBtn = document.getElementById('stopPhonicsBtn');
+  if (playBtn) playBtn.classList.remove('hidden');
+  if (stopBtn) stopBtn.classList.add('hidden');
+  document.querySelectorAll('.phonics-card').forEach(c => c.classList.remove('highlight'));
 }
 
 // ===== QUIZ =====
