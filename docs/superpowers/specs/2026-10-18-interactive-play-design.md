@@ -142,10 +142,10 @@ const DIALOGUE_DATA = [
 | 场景 | 家长 | 孩子句式 | 替换词 |
 |---|---|---|---|
 | 认识东西 | What's this? | It's a {x}. | cat 🐱、dog 🐶、duck 🦆 |
-| 想要东西 | What do you want? | I want a {x}. | banana 🍌、apple 🍎、cookie 🍪 |
+| 想要东西 | What do you want? | I want a {x}. | banana 🍌、peach 🍑、cookie 🍪 |
 | 问候 | How are you? | I'm {x}. | happy 😄、sad 😢、hungry 😋 |
 | 问颜色 | What color is it? | It's {x}. | red ❤️、blue 💙、green 💚 |
-| 请求 | Can I help you? | Can I have a {x}? | apple 🍎、banana 🍌、cookie 🍪 |
+| 请求 | Can I help you? | Can I have a {x}? | peach 🍑、banana 🍌、cookie 🍪 |
 | 睡前 | Good night! | Good night, {x}! | Mommy 👩、Daddy 👨、Teddy 🧸 |
 
 说明：
@@ -182,7 +182,7 @@ const ISPY_DATA = [
 |---|---|---|---|
 | apple | 苹果 | 🍎 | red 红色 |
 | strawberry | 草莓 | 🍓 | red 红色 |
-| car | 汽车 | 🚗 | blue 蓝色 |
+| whale | 鲸鱼 | 🐳 | blue 蓝色 |
 | fish | 鱼 | 🐟 | blue 蓝色 |
 | tree | 树 | 🌳 | green 绿色 |
 | frog | 青蛙 | 🐸 | green 绿色 |
@@ -191,7 +191,7 @@ const ISPY_DATA = [
 | flower | 花 | 🌸 | pink 粉色 |
 | pig | 猪 | 🐷 | pink 粉色 |
 | grape | 葡萄 | 🍇 | purple 紫色 |
-| balloon | 气球 | 🎈 | purple 紫色 |
+| eggplant | 茄子 | 🍆 | purple 紫色 |
 
 ### 出题规则
 

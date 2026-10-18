@@ -48,6 +48,7 @@ const { assert, openApp, runTest, finish } = require('./harness');
     }));
 
     assert.strictEqual(data.tpr.length, 24);
+    assert.strictEqual(new Set(data.tpr.map(i => i.en)).size, 24);
     data.tpr.forEach(item => {
       assert.ok(item.en && item.cn && item.emoji, `bad TPR item: ${JSON.stringify(item)}`);
     });
@@ -59,12 +60,25 @@ const { assert, openApp, runTest, finish } = require('./harness');
       d.subs.forEach(s => assert.ok(s.en && s.cn && s.emoji));
       assert.ok(d.child.en.includes('{x}'), `missing {x}: ${d.child.en}`);
       assert.ok(d.child.cn.includes('{xCn}'), `missing {xCn}: ${d.child.cn}`);
+      if (d.child.en.includes('a {x}')) {
+        d.subs.forEach(s => assert.ok(!/^[aeiou]/i.test(s.en), `a/an error: ${s.en}`));
+      }
     });
 
     assert.strictEqual(data.ispy.length, 12);
-    assert.strictEqual(new Set(data.ispy.map(i => i.color)).size, 6);
+    assert.strictEqual(new Set(data.ispy.map(i => i.en)).size, 12);
+    const colorCounts = {};
+    const colorNames = {};
     data.ispy.forEach(item => {
       assert.ok(item.en && item.cn && item.emoji && item.color && item.colorCn);
+      colorCounts[item.color] = (colorCounts[item.color] || 0) + 1;
+      colorNames[item.color] = item.colorCn;
+    });
+    assert.strictEqual(Object.keys(colorCounts).length, 6);
+    Object.values(colorCounts).forEach(n => assert.strictEqual(n, 2));
+    assert.deepStrictEqual(colorNames, {
+      red: '红色', blue: '蓝色', green: '绿色',
+      yellow: '黄色', pink: '粉色', purple: '紫色'
     });
   });
 
@@ -133,7 +147,7 @@ const DIALOGUE_DATA = [
     child: { en: 'I want a {x}.', cn: '我想要{xCn}。' },
     subs: [
       { en: 'banana', cn: '香蕉', emoji: '🍌' },
-      { en: 'apple', cn: '苹果', emoji: '🍎' },
+      { en: 'peach', cn: '桃子', emoji: '🍑' },
       { en: 'cookie', cn: '饼干', emoji: '🍪' }
     ]
   },
@@ -162,7 +176,7 @@ const DIALOGUE_DATA = [
     parent: { en: 'Can I help you?', cn: '你需要什么吗？' },
     child: { en: 'Can I have a {x}?', cn: '我可以要{xCn}吗？' },
     subs: [
-      { en: 'apple', cn: '苹果', emoji: '🍎' },
+      { en: 'peach', cn: '桃子', emoji: '🍑' },
       { en: 'banana', cn: '香蕉', emoji: '🍌' },
       { en: 'cookie', cn: '饼干', emoji: '🍪' }
     ]
@@ -182,7 +196,7 @@ const DIALOGUE_DATA = [
 const ISPY_DATA = [
   { en: 'apple', cn: '苹果', emoji: '🍎', color: 'red', colorCn: '红色' },
   { en: 'strawberry', cn: '草莓', emoji: '🍓', color: 'red', colorCn: '红色' },
-  { en: 'car', cn: '汽车', emoji: '🚗', color: 'blue', colorCn: '蓝色' },
+  { en: 'whale', cn: '鲸鱼', emoji: '🐳', color: 'blue', colorCn: '蓝色' },
   { en: 'fish', cn: '鱼', emoji: '🐟', color: 'blue', colorCn: '蓝色' },
   { en: 'tree', cn: '树', emoji: '🌳', color: 'green', colorCn: '绿色' },
   { en: 'frog', cn: '青蛙', emoji: '🐸', color: 'green', colorCn: '绿色' },
@@ -191,7 +205,7 @@ const ISPY_DATA = [
   { en: 'flower', cn: '花', emoji: '🌸', color: 'pink', colorCn: '粉色' },
   { en: 'pig', cn: '猪', emoji: '🐷', color: 'pink', colorCn: '粉色' },
   { en: 'grape', cn: '葡萄', emoji: '🍇', color: 'purple', colorCn: '紫色' },
-  { en: 'balloon', cn: '气球', emoji: '🎈', color: 'purple', colorCn: '紫色' }
+  { en: 'eggplant', cn: '茄子', emoji: '🍆', color: 'purple', colorCn: '紫色' }
 ];
 ```
 
