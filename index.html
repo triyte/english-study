@@ -520,6 +520,45 @@ body {
 .play-complete-title { font-size: 32px; font-weight: 800; margin: 12px 0 20px; }
 #playPage .cat-tab,
 #playPage .tool-btn { min-height: 64px; }
+.dialogue-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+.dialogue-role { font-size: var(--font-sm); font-weight: 700; white-space: nowrap; padding-top: 14px; }
+.bubble {
+  flex: 1;
+  text-align: left;
+  border: 3px solid transparent;
+  border-radius: 22px;
+  padding: 16px 20px;
+  font-size: 26px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, border-color 0.2s;
+  color: var(--text);
+}
+.bubble:hover { transform: scale(1.02); }
+.bubble:active { transform: scale(0.97); }
+.bubble-parent { background: #EAF4FF; border-color: #BFDDFF; }
+.bubble-child { background: #FFF4E6; border-color: #FFD8A8; }
+.bubble-cn {
+  display: block;
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+.sub-chips { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 18px; }
+.sub-chip {
+  padding: 12px 18px;
+  border-radius: 50px;
+  border: 2.5px solid #E0D7C6;
+  background: var(--card-bg);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.sub-chip.active { background: var(--c6); color: #fff; border-color: var(--c6); }
+#playPage .bubble,
+#playPage .sub-chip { min-height: 64px; }
 
 /* ===== hidden util ===== */
 .hidden { display: none !important; }
@@ -1377,6 +1416,7 @@ function switchPlayTab(tab) {
 
 function renderPlay() {
   if (currentPlayTab === 'tpr') renderTpr();
+  else if (currentPlayTab === 'dialogue') renderDialogue();
   else document.getElementById('playContent').innerHTML =
     '<div class="play-progress" style="text-align:center;padding:40px 0;">这个模块马上就来～</div>';
 }
@@ -1434,6 +1474,89 @@ function nextTpr() {
   tprIndex++;
   renderTpr();
   speakTpr();
+}
+
+function fillDialogue(template, sub) {
+  return template.replace(/\{x\}/g, sub.en).replace(/\{xCn\}/g, sub.cn);
+}
+
+function renderDialogue() {
+  const content = document.getElementById('playContent');
+  if (dialogueIndex >= DIALOGUE_DATA.length) {
+    content.innerHTML = `
+      <div class="play-complete">
+        <div class="play-complete-icon">🎉</div>
+        <div class="play-complete-title">完成 6 组对话！</div>
+        <button class="big-btn" style="background:var(--c4)" onclick="restartDialogue()">🔄 再来一轮</button>
+      </div>`;
+    return;
+  }
+  const d = DIALOGUE_DATA[dialogueIndex];
+  const sub = d.subs[dialogueSubIndex];
+  const childEn = fillDialogue(d.child.en, sub);
+  const childCn = fillDialogue(d.child.cn, sub);
+  content.innerHTML = `
+    <div class="play-progress">${dialogueIndex + 1} / ${DIALOGUE_DATA.length} · ${d.scene}</div>
+    <div class="dialogue-row">
+      <span class="dialogue-role">🧑 家长</span>
+      <button class="bubble bubble-parent" onclick="speakDialogue('parent')">
+        ${d.parent.en}<span class="bubble-cn">${d.parent.cn}</span>
+      </button>
+    </div>
+    <div class="dialogue-row">
+      <span class="dialogue-role">🧒 孩子</span>
+      <button class="bubble bubble-child" onclick="speakDialogue('child')">
+        ${childEn}<span class="bubble-cn">${childCn}</span>
+      </button>
+    </div>
+    <div class="sub-chips">
+      ${d.subs.map((s, i) =>
+        `<button class="sub-chip ${i === dialogueSubIndex ? 'active' : ''}" onclick="selectDialogueSub(${i})">${s.emoji} ${s.en}</button>`
+      ).join('')}
+    </div>
+    <div class="play-actions">
+      <button class="tool-btn" onclick="playDialogue()">🔊 播放对话</button>
+      <button class="tool-btn active" onclick="nextDialogue()">下一个 →</button>
+    </div>`;
+}
+
+function speakDialogue(role) {
+  const d = DIALOGUE_DATA[dialogueIndex];
+  if (!d) return;
+  if (role === 'parent') speak(d.parent.en);
+  else speak(fillDialogue(d.child.en, d.subs[dialogueSubIndex]));
+}
+
+function selectDialogueSub(i) {
+  dialogueSubIndex = i;
+  renderDialogue();
+  speakDialogue('child');
+}
+
+function playDialogue() {
+  stopPlaySpeech();
+  const token = playSpeechToken;
+  const d = DIALOGUE_DATA[dialogueIndex];
+  if (!d) return;
+  speak(d.parent.en, () => {
+    if (token !== playSpeechToken) return;
+    playTimer = setTimeout(() => {
+      if (token !== playSpeechToken) return;
+      speak(fillDialogue(d.child.en, d.subs[dialogueSubIndex]));
+    }, 250);
+  });
+}
+
+function nextDialogue() {
+  dialogueIndex++;
+  dialogueSubIndex = 0;
+  renderDialogue();
+}
+
+function restartDialogue() {
+  dialogueIndex = 0;
+  dialogueSubIndex = 0;
+  renderDialogue();
 }
 
 // ===== QUIZ =====
