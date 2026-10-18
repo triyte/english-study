@@ -486,6 +486,39 @@ body {
 .big-btn:hover { transform: scale(1.05); box-shadow: var(--shadow-hover); }
 .big-btn:active { transform: scale(0.95); }
 
+/* ===== Interactive Play ===== */
+.play-progress {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--text-light);
+  margin-bottom: 14px;
+}
+.play-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 34px 24px;
+  box-shadow: var(--shadow);
+  border: 3px solid var(--c2);
+  margin-bottom: 18px;
+}
+.play-emoji { font-size: 84px; line-height: 1; }
+.play-en { font-size: 34px; font-weight: 800; text-align: center; color: var(--text); }
+.play-cn { font-size: var(--font-md); color: var(--text-light); font-weight: 600; }
+.play-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.play-complete {
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 40px 24px;
+  box-shadow: var(--shadow);
+}
+.play-complete-icon { font-size: 72px; }
+.play-complete-title { font-size: 32px; font-weight: 800; margin: 12px 0 20px; }
+
 /* ===== hidden util ===== */
 .hidden { display: none !important; }
 </style>
@@ -544,6 +577,13 @@ body {
           <span class="home-card-desc">认识元音和辅音，听音学发音</span>
         </span>
       </button>
+      <button class="home-card" style="background:linear-gradient(135deg,var(--c2),var(--c3))" onclick="showPlay()">
+        <span class="home-card-icon">&#127918;</span>
+        <span class="home-card-text">
+          <span class="home-card-label">互动乐园</span>
+          <span class="home-card-desc">听指令、说句子、找一找</span>
+        </span>
+      </button>
     </div>
   </div>
 
@@ -575,6 +615,12 @@ body {
       <button id="stopPhonicsBtn" class="tool-btn hidden" onclick="stopPhonicsAuto()">&#9632; 停止</button>
     </div>
     <div id="phonicsGrid" class="phonics-grid"></div>
+  </div>
+
+  <!-- ====== PLAY PAGE ====== -->
+  <div id="playPage" class="page">
+    <div class="category-tabs" id="playTabs"></div>
+    <div id="playContent"></div>
   </div>
 
   <!-- ====== QUIZ PAGE ====== -->
@@ -922,6 +968,19 @@ let quizScore = 0;
 let currentPhonicsGroup = 'vowels';
 let phonicsAutoTimer = null;
 let phonicsAutoToken = 0;
+let currentPlayTab = 'tpr'; // 'tpr' | 'dialogue' | 'ispy'
+let tprQueue = [];
+let tprIndex = 0;
+let dialogueIndex = 0;
+let dialogueSubIndex = 0;
+let ispyRound = 0;
+let ispyTarget = null;
+let ispyPromptType = 'object'; // 'object' | 'color'
+let ispyTiles = [];
+let ispyStars = 0;
+let ispyLocked = false;
+let playSpeechToken = 0;
+let playTimer = null;
 
 // ===== SPEECH =====
 function loadVoices() {
@@ -972,6 +1031,7 @@ function goHome() {
   stopAutoPlay();
   stopWordsAuto();
   stopPhonicsAuto();
+  stopPlaySpeech();
   hideAllPages();
   hideNav();
   document.getElementById('homePage').classList.add('active');
@@ -1269,6 +1329,108 @@ function autoPlayPhonics() {
     });
   }
   playNext();
+}
+
+// ===== INTERACTIVE PLAY =====
+function showPlay() {
+  stopAutoPlay();
+  stopWordsAuto();
+  stopPhonicsAuto();
+  stopPlaySpeech();
+  hideAllPages();
+  showNav('互动乐园');
+  document.getElementById('playPage').classList.add('active');
+  currentPlayTab = 'tpr';
+  tprQueue = [];
+  tprIndex = 0;
+  dialogueIndex = 0;
+  dialogueSubIndex = 0;
+  ispyRound = 0;
+  ispyStars = 0;
+  ispyTiles = [];
+  ispyTarget = null;
+  ispyLocked = false;
+  renderPlayTabs();
+  startTprRound();
+}
+
+function renderPlayTabs() {
+  const tabs = [
+    { key: 'tpr', label: '🎧 听指令' },
+    { key: 'dialogue', label: '💬 说句子' },
+    { key: 'ispy', label: '🔍 找一找' }
+  ];
+  document.getElementById('playTabs').innerHTML = tabs.map(t =>
+    `<button class="cat-tab ${currentPlayTab === t.key ? 'active' : ''}" onclick="switchPlayTab('${t.key}')">${t.label}</button>`
+  ).join('');
+}
+
+function switchPlayTab(tab) {
+  stopPlaySpeech();
+  currentPlayTab = tab;
+  renderPlayTabs();
+  renderPlay();
+}
+
+function renderPlay() {
+  if (currentPlayTab === 'tpr') renderTpr();
+  else document.getElementById('playContent').innerHTML =
+    '<div class="play-progress" style="text-align:center;padding:40px 0;">这个模块马上就来～</div>';
+}
+
+function stopPlaySpeech() {
+  playSpeechToken++;
+  ispyLocked = false;
+  if (playTimer) { clearTimeout(playTimer); playTimer = null; }
+  synth.cancel();
+}
+
+function startTprRound() {
+  tprQueue = shuffleArray(TPR_DATA.map((_, i) => i)).slice(0, 8);
+  tprIndex = 0;
+  renderTpr();
+  speakTpr();
+}
+
+function renderTpr() {
+  if (!tprQueue.length) {
+    tprQueue = shuffleArray(TPR_DATA.map((_, i) => i)).slice(0, 8);
+    tprIndex = 0;
+  }
+  const content = document.getElementById('playContent');
+  if (tprIndex >= tprQueue.length) {
+    content.innerHTML = `
+      <div class="play-complete">
+        <div class="play-complete-icon">🎉</div>
+        <div class="play-complete-title">完成 8 个指令！</div>
+        <button class="big-btn" style="background:var(--c4)" onclick="startTprRound()">🔄 再来一轮</button>
+      </div>`;
+    return;
+  }
+  const item = TPR_DATA[tprQueue[tprIndex]];
+  content.innerHTML = `
+    <div class="play-progress">${tprIndex + 1} / ${tprQueue.length}</div>
+    <div class="play-card">
+      <span class="play-emoji">${item.emoji}</span>
+      <span class="play-en">${item.en}</span>
+      <span class="play-cn">${item.cn}</span>
+    </div>
+    <div class="play-actions">
+      <button class="tool-btn" onclick="speakTpr()">🔊 再听一遍</button>
+      <button class="tool-btn active" onclick="nextTpr()">下一条 →</button>
+    </div>`;
+}
+
+function speakTpr() {
+  const item = TPR_DATA[tprQueue[tprIndex]];
+  if (item) speak(item.en);
+}
+
+function nextTpr() {
+  if (tprIndex >= tprQueue.length) return;
+  tprIndex++;
+  renderTpr();
+  speakTpr();
 }
 
 // ===== QUIZ =====
