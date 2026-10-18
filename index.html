@@ -530,6 +530,7 @@ body {
   padding: 16px 20px;
   font-size: 26px;
   font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
   box-shadow: var(--shadow);
   transition: transform 0.15s, border-color 0.2s;
@@ -554,6 +555,7 @@ body {
   background: var(--card-bg);
   font-size: var(--font-sm);
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
 }
 .sub-chip.active { background: var(--c6); color: #fff; border-color: var(--c6); }
@@ -1486,7 +1488,7 @@ function renderDialogue() {
     content.innerHTML = `
       <div class="play-complete">
         <div class="play-complete-icon">🎉</div>
-        <div class="play-complete-title">完成 6 组对话！</div>
+        <div class="play-complete-title">完成 ${DIALOGUE_DATA.length} 组对话！</div>
         <button class="big-btn" style="background:var(--c4)" onclick="restartDialogue()">🔄 再来一轮</button>
       </div>`;
     return;
@@ -1521,6 +1523,7 @@ function renderDialogue() {
 }
 
 function speakDialogue(role) {
+  stopPlaySpeech();
   const d = DIALOGUE_DATA[dialogueIndex];
   if (!d) return;
   if (role === 'parent') speak(d.parent.en);
@@ -1548,12 +1551,14 @@ function playDialogue() {
 }
 
 function nextDialogue() {
+  stopPlaySpeech();
   dialogueIndex++;
   dialogueSubIndex = 0;
   renderDialogue();
 }
 
 function restartDialogue() {
+  stopPlaySpeech();
   dialogueIndex = 0;
   dialogueSubIndex = 0;
   renderDialogue();
