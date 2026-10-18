@@ -1124,6 +1124,7 @@ let currentQuizMode = 'letter';
 let quizQuestions = [];
 let quizIndex = 0;
 let quizScore = 0;
+let quizNextTimer = null;
 let currentPhonicsGroup = 'vowels';
 let phonicsAutoTimer = null;
 let phonicsAutoToken = 0;
@@ -1334,6 +1335,7 @@ function goHome() {
   stopPhonicsAuto();
   stopPlaySpeech();
   fxClear();
+  clearTimeout(quizNextTimer);
   hideAllPages();
   hideNav();
   document.getElementById('homePage').classList.add('active');
@@ -1939,6 +1941,7 @@ function setDifficulty(level) {
 
 function showQuizSetup() {
   synth.cancel();
+  clearTimeout(quizNextTimer);
   hideAllPages();
   showNav('趣味练习');
   document.getElementById('quizPage').classList.add('active');
@@ -1988,6 +1991,7 @@ function generateQuestions(mode) {
 function startQuiz(mode) {
   if (mode) currentQuizMode = mode;
   synth.cancel();
+  clearTimeout(quizNextTimer);
   quizQuestions = generateQuestions(currentQuizMode);
   quizIndex = 0;
   quizScore = 0;
@@ -2054,7 +2058,7 @@ function answerQuiz(idx) {
     playSfx('correct');
     fxBurstFrom(el, 10);
     fxMascot('cheer');
-    setTimeout(() => {
+    quizNextTimer = setTimeout(() => {
       quizIndex++;
       renderQuizQuestion();
     }, 900);
