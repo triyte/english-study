@@ -518,6 +518,8 @@ body {
 }
 .play-complete-icon { font-size: 72px; }
 .play-complete-title { font-size: 32px; font-weight: 800; margin: 12px 0 20px; }
+#playPage .cat-tab,
+#playPage .tool-btn { min-height: 64px; }
 
 /* ===== hidden util ===== */
 .hidden { display: none !important; }
@@ -1403,7 +1405,7 @@ function renderTpr() {
     content.innerHTML = `
       <div class="play-complete">
         <div class="play-complete-icon">🎉</div>
-        <div class="play-complete-title">完成 8 个指令！</div>
+        <div class="play-complete-title">完成 ${tprQueue.length} 个指令！</div>
         <button class="big-btn" style="background:var(--c4)" onclick="startTprRound()">🔄 再来一轮</button>
       </div>`;
     return;
