@@ -561,6 +561,28 @@ body {
 .sub-chip.active { background: var(--c6); color: #fff; border-color: var(--c6); }
 #playPage .bubble,
 #playPage .sub-chip { min-height: 64px; }
+.ispy-prompt { text-align: center; margin-bottom: 18px; }
+.ispy-prompt .quiz-speaker-btn { margin-bottom: 10px; }
+.ispy-prompt-text { font-size: 30px; font-weight: 800; }
+.ispy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.ispy-tile {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: 3px solid transparent;
+  background: var(--card-bg);
+  font-size: 56px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+}
+.ispy-tile:hover { transform: scale(1.04); }
+.ispy-tile:active { transform: scale(0.94); }
+.ispy-tile.correct { border-color: var(--c4); background: #EBFBEE; }
+.ispy-tile.wrong { animation: shake 0.4s ease; border-color: var(--c1); }
 
 /* ===== hidden util ===== */
 .hidden { display: none !important; }
@@ -1414,13 +1436,13 @@ function switchPlayTab(tab) {
   currentPlayTab = tab;
   renderPlayTabs();
   renderPlay();
+  if (tab === 'ispy') speakIspyPrompt();
 }
 
 function renderPlay() {
   if (currentPlayTab === 'tpr') renderTpr();
   else if (currentPlayTab === 'dialogue') renderDialogue();
-  else document.getElementById('playContent').innerHTML =
-    '<div class="play-progress" style="text-align:center;padding:40px 0;">这个模块马上就来～</div>';
+  else renderIspy();
 }
 
 function stopPlaySpeech() {
@@ -1562,6 +1584,100 @@ function restartDialogue() {
   dialogueIndex = 0;
   dialogueSubIndex = 0;
   renderDialogue();
+}
+
+function buildIspyRound() {
+  const pool = shuffleArray(ISPY_DATA);
+  const byColor = {};
+  pool.forEach(item => {
+    if (!byColor[item.color]) byColor[item.color] = item;
+  });
+  const colors = Object.keys(byColor);
+  ispyTiles = colors.slice(0, 6).map(c => byColor[c]);
+  ispyTarget = ispyTiles[Math.floor(Math.random() * ispyTiles.length)];
+  ispyPromptType = Math.random() < 0.5 ? 'object' : 'color';
+}
+
+function startIspyRound() {
+  ispyRound = 0;
+  ispyStars = 0;
+  ispyTiles = [];
+  ispyLocked = false;
+  nextIspyRound();
+}
+
+function nextIspyRound() {
+  buildIspyRound();
+  renderIspy();
+  speakIspyPrompt();
+}
+
+function renderIspy() {
+  const content = document.getElementById('playContent');
+  if (ispyRound >= 5) {
+    content.innerHTML = `
+      <div class="play-complete">
+        <div class="play-complete-icon">🏆</div>
+        <div class="play-complete-title">太棒了！</div>
+        <div class="play-progress">⭐ ${ispyStars} / 5</div>
+        <button class="big-btn" style="background:var(--c4)" onclick="startIspyRound()">🔄 再玩一次</button>
+      </div>`;
+    return;
+  }
+  if (!ispyTiles.length) buildIspyRound();
+  const promptEn = ispyPromptType === 'object'
+    ? `Find the ${ispyTarget.en}.`
+    : `Find something ${ispyTarget.color}.`;
+  const promptCn = ispyPromptType === 'object'
+    ? `找${ispyTarget.cn}`
+    : `找${ispyTarget.colorCn}的东西`;
+  content.innerHTML = `
+    <div class="play-progress">${ispyRound + 1} / 5 · ⭐ ${ispyStars}</div>
+    <div class="ispy-prompt">
+      <button class="quiz-speaker-btn" onclick="speakIspyPrompt()">🔊</button>
+      <div class="ispy-prompt-text">${promptEn}</div>
+      <div class="play-cn">${promptCn}</div>
+    </div>
+    <div class="ispy-grid">
+      ${ispyTiles.map((item, i) =>
+        `<button class="ispy-tile" id="ispy-${i}" onclick="answerIspy(${i})">${item.emoji}</button>`
+      ).join('')}
+    </div>`;
+}
+
+function speakIspyPrompt() {
+  if (!ispyTarget || ispyRound >= 5) return;
+  if (ispyPromptType === 'object') speak(`Find the ${ispyTarget.en}.`);
+  else speak(`Find something ${ispyTarget.color}.`);
+}
+
+function answerIspy(i) {
+  if (ispyLocked) return;
+  const item = ispyTiles[i];
+  if (!item) return;
+  const correct = ispyPromptType === 'object'
+    ? item.en === ispyTarget.en
+    : item.color === ispyTarget.color;
+  const el = document.getElementById('ispy-' + i);
+  if (!correct) {
+    if (el) {
+      el.classList.add('wrong');
+      setTimeout(() => el.classList.remove('wrong'), 400);
+    }
+    speakIspyPrompt();
+    return;
+  }
+  if (el) el.classList.add('correct');
+  ispyStars++;
+  ispyLocked = true;
+  const token = playSpeechToken;
+  playTimer = setTimeout(() => {
+    if (token !== playSpeechToken) return;
+    ispyLocked = false;
+    ispyRound++;
+    if (ispyRound >= 5) renderIspy();
+    else nextIspyRound();
+  }, 700);
 }
 
 // ===== QUIZ =====
