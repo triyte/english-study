@@ -1305,6 +1305,18 @@ function fxClear() {
   if (mascot) mascot.classList.remove('peek', 'cheer', 'oops');
 }
 
+const TAP_SELECTOR = '.home-card, .letter-card, .word-card, .phonics-card, .phonics-example, .cat-tab, .tool-btn, .big-btn, .quiz-mode-card, .bubble, .sub-chip, .quiz-speaker-btn';
+
+document.addEventListener('click', event => {
+  if (event.target.closest('#soundToggle')) return;
+  const el = event.target.closest(TAP_SELECTOR);
+  if (!el) return;
+  playSfx('tap');
+  if (el.matches('.letter-card, .word-card, .phonics-card, .phonics-example, .bubble, .sub-chip')) {
+    fxMascot('peek');
+  }
+}, true);
+
 // ===== NAVIGATION =====
 function hideAllPages() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
