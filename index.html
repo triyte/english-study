@@ -1668,11 +1668,12 @@ function answerIspy(i) {
     return;
   }
   if (el) el.classList.add('correct');
-  ispyStars++;
   ispyLocked = true;
   const token = playSpeechToken;
   playTimer = setTimeout(() => {
     if (token !== playSpeechToken) return;
+    playTimer = null;
+    ispyStars++;
     ispyLocked = false;
     ispyRound++;
     if (ispyRound >= 5) renderIspy();
