@@ -1333,6 +1333,7 @@ function goHome() {
   stopWordsAuto();
   stopPhonicsAuto();
   stopPlaySpeech();
+  fxClear();
   hideAllPages();
   hideNav();
   document.getElementById('homePage').classList.add('active');
@@ -1733,6 +1734,10 @@ function nextTpr() {
   if (tprIndex >= tprQueue.length) return;
   tprIndex++;
   renderTpr();
+  if (tprIndex >= tprQueue.length) {
+    fxCelebrate();
+    return;
+  }
   speakTpr();
 }
 
@@ -1813,6 +1818,7 @@ function nextDialogue() {
   dialogueIndex++;
   dialogueSubIndex = 0;
   renderDialogue();
+  if (dialogueIndex >= DIALOGUE_DATA.length) fxCelebrate();
 }
 
 function restartDialogue() {
@@ -1917,8 +1923,10 @@ function answerIspy(i) {
     ispyStars++;
     ispyLocked = false;
     ispyRound++;
-    if (ispyRound >= 5) renderIspy();
-    else nextIspyRound();
+    if (ispyRound >= 5) {
+      renderIspy();
+      fxCelebrate();
+    } else nextIspyRound();
   }, 700);
 }
 
@@ -2074,6 +2082,7 @@ function showQuizComplete() {
   else if (quizScore >= 4) stars = '⭐';
   else stars = '💪';
   document.getElementById('completeStars').textContent = stars;
+  fxCelebrate();
 }
 
 // ===== PRIME SPEECH (iOS/Chrome workaround) =====
