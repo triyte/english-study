@@ -799,6 +799,114 @@ const PHONICS_DATA = {
   }
 };
 
+const TPR_DATA = [
+  // 身体部位
+  { en: 'Touch your nose', cn: '摸摸鼻子', emoji: '👃' },
+  { en: 'Touch your ears', cn: '摸摸耳朵', emoji: '👂' },
+  { en: 'Touch your head', cn: '摸摸头', emoji: '🙆' },
+  { en: 'Touch your tummy', cn: '摸摸肚子', emoji: '🧒' },
+  { en: 'Touch your feet', cn: '摸摸脚', emoji: '🦶' },
+  { en: 'Clap your hands', cn: '拍拍手', emoji: '👏' },
+  { en: 'Wave your hands', cn: '挥挥手', emoji: '👋' },
+  { en: 'Blink your eyes', cn: '眨眨眼', emoji: '👀' },
+  // 动作
+  { en: 'Stand up', cn: '站起来', emoji: '🧍' },
+  { en: 'Sit down', cn: '坐下', emoji: '🪑' },
+  { en: 'Jump up', cn: '跳一跳', emoji: '⬆️' },
+  { en: 'Turn around', cn: '转个圈', emoji: '🔄' },
+  { en: 'Run in place', cn: '原地跑', emoji: '🏃' },
+  { en: 'Walk slowly', cn: '慢慢走', emoji: '🚶' },
+  { en: 'Hop like a rabbit', cn: '像兔子一样跳', emoji: '🐰' },
+  { en: 'Fly like a bird', cn: '像小鸟一样飞', emoji: '🐦' },
+  // 日常作息
+  { en: 'Open the door', cn: '打开门', emoji: '🚪' },
+  { en: 'Close the door', cn: '关上门', emoji: '🚪' },
+  { en: 'Pick up the ball', cn: '捡起球', emoji: '⚽' },
+  { en: 'Throw the ball', cn: '扔球', emoji: '🏀' },
+  { en: 'Wash your hands', cn: '洗手', emoji: '🧼' },
+  { en: 'Brush your teeth', cn: '刷牙', emoji: '🪥' },
+  { en: 'Put on your hat', cn: '戴上帽子', emoji: '🎩' },
+  { en: 'Take off your hat', cn: '摘下帽子', emoji: '🧢' }
+];
+
+const DIALOGUE_DATA = [
+  {
+    scene: '认识东西',
+    parent: { en: "What's this?", cn: '这是什么？' },
+    child: { en: "It's a {x}.", cn: '这是一只{xCn}。' },
+    subs: [
+      { en: 'cat', cn: '猫', emoji: '🐱' },
+      { en: 'dog', cn: '狗', emoji: '🐶' },
+      { en: 'duck', cn: '鸭子', emoji: '🦆' }
+    ]
+  },
+  {
+    scene: '想要东西',
+    parent: { en: 'What do you want?', cn: '你想要什么？' },
+    child: { en: 'I want a {x}.', cn: '我想要{xCn}。' },
+    subs: [
+      { en: 'banana', cn: '香蕉', emoji: '🍌' },
+      { en: 'apple', cn: '苹果', emoji: '🍎' },
+      { en: 'cookie', cn: '饼干', emoji: '🍪' }
+    ]
+  },
+  {
+    scene: '问候',
+    parent: { en: 'How are you?', cn: '你好吗？' },
+    child: { en: "I'm {x}.", cn: '我{xCn}。' },
+    subs: [
+      { en: 'happy', cn: '开心', emoji: '😄' },
+      { en: 'sad', cn: '难过', emoji: '😢' },
+      { en: 'hungry', cn: '饿了', emoji: '😋' }
+    ]
+  },
+  {
+    scene: '问颜色',
+    parent: { en: 'What color is it?', cn: '它是什么颜色？' },
+    child: { en: "It's {x}.", cn: '它是{xCn}。' },
+    subs: [
+      { en: 'red', cn: '红色', emoji: '❤️' },
+      { en: 'blue', cn: '蓝色', emoji: '💙' },
+      { en: 'green', cn: '绿色', emoji: '💚' }
+    ]
+  },
+  {
+    scene: '请求',
+    parent: { en: 'Can I help you?', cn: '你需要什么吗？' },
+    child: { en: 'Can I have a {x}?', cn: '我可以要{xCn}吗？' },
+    subs: [
+      { en: 'apple', cn: '苹果', emoji: '🍎' },
+      { en: 'banana', cn: '香蕉', emoji: '🍌' },
+      { en: 'cookie', cn: '饼干', emoji: '🍪' }
+    ]
+  },
+  {
+    scene: '睡前',
+    parent: { en: 'Good night!', cn: '晚安！' },
+    child: { en: 'Good night, {x}!', cn: '晚安，{xCn}！' },
+    subs: [
+      { en: 'Mommy', cn: '妈妈', emoji: '👩' },
+      { en: 'Daddy', cn: '爸爸', emoji: '👨' },
+      { en: 'Teddy', cn: '泰迪熊', emoji: '🧸' }
+    ]
+  }
+];
+
+const ISPY_DATA = [
+  { en: 'apple', cn: '苹果', emoji: '🍎', color: 'red', colorCn: '红色' },
+  { en: 'strawberry', cn: '草莓', emoji: '🍓', color: 'red', colorCn: '红色' },
+  { en: 'car', cn: '汽车', emoji: '🚗', color: 'blue', colorCn: '蓝色' },
+  { en: 'fish', cn: '鱼', emoji: '🐟', color: 'blue', colorCn: '蓝色' },
+  { en: 'tree', cn: '树', emoji: '🌳', color: 'green', colorCn: '绿色' },
+  { en: 'frog', cn: '青蛙', emoji: '🐸', color: 'green', colorCn: '绿色' },
+  { en: 'banana', cn: '香蕉', emoji: '🍌', color: 'yellow', colorCn: '黄色' },
+  { en: 'sun', cn: '太阳', emoji: '☀️', color: 'yellow', colorCn: '黄色' },
+  { en: 'flower', cn: '花', emoji: '🌸', color: 'pink', colorCn: '粉色' },
+  { en: 'pig', cn: '猪', emoji: '🐷', color: 'pink', colorCn: '粉色' },
+  { en: 'grape', cn: '葡萄', emoji: '🍇', color: 'purple', colorCn: '紫色' },
+  { en: 'balloon', cn: '气球', emoji: '🎈', color: 'purple', colorCn: '紫色' }
+];
+
 // ===== STATE =====
 const synth = window.speechSynthesis;
 let voices = [];
