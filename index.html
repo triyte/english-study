@@ -586,6 +586,95 @@ body {
 
 /* ===== hidden util ===== */
 .hidden { display: none !important; }
+
+/* ===== Playful Feedback ===== */
+#fxLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 100;
+}
+.nav-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-sound {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--card-bg);
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-sound:hover { transform: scale(1.08); box-shadow: var(--shadow-hover); }
+.nav-sound:active { transform: scale(0.95); }
+.nav-mascot {
+  font-size: 32px;
+  line-height: 1;
+  display: inline-block;
+  transform-origin: 50% 90%;
+}
+.nav-mascot.peek { animation: mascotPeek 0.4s ease; }
+.nav-mascot.cheer { animation: mascotCheer 0.7s ease; }
+.nav-mascot.oops { animation: mascotOops 0.6s ease; }
+.fx-particle {
+  position: fixed;
+  font-size: 22px;
+  line-height: 1;
+  animation: fxBurst 0.65s ease-out forwards;
+}
+.fx-confetti {
+  position: fixed;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  animation: fxFall 1.8s linear forwards;
+}
+.fx-mascot {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  font-size: 96px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  animation: fxDance 1.8s ease-in-out forwards;
+}
+@keyframes fxBurst {
+  to { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+}
+@keyframes fxFall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+@keyframes fxDance {
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0); opacity: 0; }
+  10% { opacity: 1; }
+  25% { transform: translate(-50%, -50%) scale(1.15) rotate(-10deg); }
+  50% { transform: translate(-50%, -50%) scale(1.1) rotate(10deg); }
+  75% { transform: translate(-50%, -50%) scale(1.15) rotate(-8deg); }
+  90% { opacity: 1; }
+}
+@keyframes mascotPeek {
+  50% { transform: translateY(-6px) scale(1.12); }
+}
+@keyframes mascotCheer {
+  30% { transform: translateY(-12px) rotate(-8deg); }
+  60% { transform: translateY(-4px) rotate(8deg); }
+}
+@keyframes mascotOops {
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
 </style>
 </head>
 <body>
@@ -600,10 +689,15 @@ body {
 
 <!-- App Container -->
 <div id="app">
+  <div id="fxLayer" aria-hidden="true"></div>
   <!-- Nav Bar (hidden on home) -->
   <div id="navBar" class="nav-bar hidden">
     <button class="nav-back" onclick="goHome()" title="返回首页">&#127968;</button>
     <span id="navTitle" class="nav-title"></span>
+    <div class="nav-actions">
+      <button id="soundToggle" class="nav-sound" onclick="toggleSound()" aria-label="关闭音效">🔊</button>
+      <span id="mascot" class="nav-mascot" aria-hidden="true">🐱</span>
+    </div>
   </div>
 
   <!-- ====== HOME PAGE ====== -->
@@ -1079,6 +1173,136 @@ function speak(text, callback) {
   if (callback) u.onend = callback;
   // Chrome requires a "priming" utterance sometimes; just speak
   synth.speak(u);
+}
+
+// ===== PLAYFUL FEEDBACK =====
+let soundOn = true;
+let audioCtx = null;
+let mascotTimer = null;
+
+function toggleSound() {
+  soundOn = !soundOn;
+  const btn = document.getElementById('soundToggle');
+  if (!btn) return;
+  btn.textContent = soundOn ? '🔊' : '🔇';
+  btn.setAttribute('aria-label', soundOn ? '关闭音效' : '开启音效');
+}
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    try { audioCtx = new Ctx(); } catch (e) { return null; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function tone(freq, startOffset, duration, type = 'sine', volume = 0.1) {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const start = ctx.currentTime + startOffset;
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, start);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(start);
+  osc.stop(start + duration + 0.02);
+}
+
+function playSfx(kind) {
+  if (!soundOn) return;
+  if (kind === 'tap') {
+    tone(660, 0, 0.08, 'sine', 0.06);
+  } else if (kind === 'correct') {
+    [523, 659, 784].forEach((f, i) => tone(f, i * 0.08, 0.18, 'sine', 0.1));
+  } else if (kind === 'wrong') {
+    tone(330, 0, 0.12, 'triangle', 0.08);
+    tone(262, 0.14, 0.18, 'triangle', 0.08);
+  } else if (kind === 'complete') {
+    [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.12, 0.24, 'sine', 0.1));
+  }
+}
+
+function fxBurstFrom(el, count) {
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  fxBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, count);
+}
+
+function fxBurst(x, y, count) {
+  const layer = document.getElementById('fxLayer');
+  if (!layer) return;
+  const emojis = ['⭐', '✨', '💛', '🌟'];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('span');
+    p.className = 'fx-particle';
+    p.textContent = emojis[i % emojis.length];
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 40 + Math.random() * 70;
+    p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+    p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
+    layer.appendChild(p);
+    setTimeout(() => p.remove(), 800);
+  }
+}
+
+function fxConfetti(count) {
+  const layer = document.getElementById('fxLayer');
+  if (!layer) return;
+  const colors = ['#FF6B6B', '#FFD43B', '#4DABF7', '#51CF66', '#CC5DE8', '#FF922B'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('span');
+    c.className = 'fx-confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = (Math.random() * 0.4) + 's';
+    layer.appendChild(c);
+    setTimeout(() => c.remove(), 2400);
+  }
+}
+
+function fxMascot(state) {
+  const el = document.getElementById('mascot');
+  if (!el) return;
+  clearTimeout(mascotTimer);
+  el.classList.remove('peek', 'cheer', 'oops');
+  void el.offsetWidth;
+  el.classList.add(state);
+  const durations = { peek: 400, cheer: 700, oops: 600 };
+  mascotTimer = setTimeout(() => el.classList.remove(state), durations[state] || 500);
+}
+
+function fxMascotDance() {
+  const layer = document.getElementById('fxLayer');
+  if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fx-mascot';
+  el.textContent = '🐱';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1800);
+}
+
+function fxCelebrate() {
+  playSfx('complete');
+  fxConfetti(24);
+  fxMascotDance();
+}
+
+function fxClear() {
+  const layer = document.getElementById('fxLayer');
+  if (layer) layer.innerHTML = '';
+  clearTimeout(mascotTimer);
+  const mascot = document.getElementById('mascot');
+  if (mascot) mascot.classList.remove('peek', 'cheer', 'oops');
 }
 
 // ===== NAVIGATION =====
