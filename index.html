@@ -1900,10 +1900,15 @@ function answerIspy(i) {
       el.classList.add('wrong');
       setTimeout(() => el.classList.remove('wrong'), 400);
     }
+    playSfx('wrong');
+    fxMascot('oops');
     speakIspyPrompt();
     return;
   }
   if (el) el.classList.add('correct');
+  playSfx('correct');
+  fxBurstFrom(el, 10);
+  fxMascot('cheer');
   ispyLocked = true;
   const token = playSpeechToken;
   playTimer = setTimeout(() => {
@@ -2036,15 +2041,20 @@ function answerQuiz(idx) {
   if (isCorrect) {
     quizScore++;
     document.getElementById('quizScoreDisplay').textContent = quizScore;
-    document.getElementById('qopt-' + idx).classList.add('correct');
-    // Celebrate
+    const el = document.getElementById('qopt-' + idx);
+    el.classList.add('correct');
+    playSfx('correct');
+    fxBurstFrom(el, 10);
+    fxMascot('cheer');
     setTimeout(() => {
       quizIndex++;
       renderQuizQuestion();
     }, 900);
   } else {
-    document.getElementById('qopt-' + idx).classList.add('wrong');
-    // Re-speak and re-enable after shake
+    const el = document.getElementById('qopt-' + idx);
+    el.classList.add('wrong');
+    playSfx('wrong');
+    fxMascot('oops');
     setTimeout(() => {
       speakQuizQuestion(q);
       document.querySelectorAll('.quiz-option').forEach(b => b.disabled = false);
