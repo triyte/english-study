@@ -571,6 +571,11 @@ body {
 }
 .ispy-tile {
   aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   border-radius: var(--radius-sm);
   border: 3px solid transparent;
   background: var(--card-bg);
@@ -583,6 +588,9 @@ body {
 .ispy-tile:active { transform: scale(0.94); }
 .ispy-tile.correct { border-color: var(--c4); background: #EBFBEE; }
 .ispy-tile.wrong { animation: shake 0.4s ease; border-color: var(--c1); }
+.ispy-tile .ispy-word { font-size: 17px; font-weight: 800; color: var(--text); line-height: 1.1; }
+.ispy-tile .ispy-cn { font-size: 13px; font-weight: 600; color: var(--text-light); }
+.ispy-tile.revealed .ispy-emoji { font-size: 40px; line-height: 1; }
 
 /* ===== hidden util ===== */
 .hidden { display: none !important; }
@@ -1098,19 +1106,50 @@ const DIALOGUE_DATA = [
 ];
 
 const ISPY_DATA = [
-  { en: 'apple', cn: '苹果', emoji: '🍎', color: 'red', colorCn: '红色' },
-  { en: 'strawberry', cn: '草莓', emoji: '🍓', color: 'red', colorCn: '红色' },
-  { en: 'whale', cn: '鲸鱼', emoji: '🐳', color: 'blue', colorCn: '蓝色' },
-  { en: 'fish', cn: '鱼', emoji: '🐟', color: 'blue', colorCn: '蓝色' },
-  { en: 'tree', cn: '树', emoji: '🌳', color: 'green', colorCn: '绿色' },
-  { en: 'frog', cn: '青蛙', emoji: '🐸', color: 'green', colorCn: '绿色' },
-  { en: 'banana', cn: '香蕉', emoji: '🍌', color: 'yellow', colorCn: '黄色' },
-  { en: 'sun', cn: '太阳', emoji: '☀️', color: 'yellow', colorCn: '黄色' },
-  { en: 'flower', cn: '花', emoji: '🌸', color: 'pink', colorCn: '粉色' },
-  { en: 'pig', cn: '猪', emoji: '🐷', color: 'pink', colorCn: '粉色' },
-  { en: 'grape', cn: '葡萄', emoji: '🍇', color: 'purple', colorCn: '紫色' },
-  { en: 'eggplant', cn: '茄子', emoji: '🍆', color: 'purple', colorCn: '紫色' }
+  // 动物
+  { en: 'crab', cn: '螃蟹', emoji: '🦀', color: 'red', colorCn: '红色', theme: 'animal', themeCn: '动物' },
+  { en: 'fish', cn: '鱼', emoji: '🐟', color: 'blue', colorCn: '蓝色', theme: 'animal', themeCn: '动物' },
+  { en: 'frog', cn: '青蛙', emoji: '🐸', color: 'green', colorCn: '绿色', theme: 'animal', themeCn: '动物' },
+  { en: 'duck', cn: '鸭子', emoji: '🦆', color: 'yellow', colorCn: '黄色', theme: 'animal', themeCn: '动物' },
+  { en: 'pig', cn: '猪', emoji: '🐷', color: 'pink', colorCn: '粉色', theme: 'animal', themeCn: '动物' },
+  { en: 'octopus', cn: '章鱼', emoji: '🐙', color: 'purple', colorCn: '紫色', theme: 'animal', themeCn: '动物' },
+  { en: 'cat', cn: '猫', emoji: '🐱', color: 'orange', colorCn: '橙色', theme: 'animal', themeCn: '动物' },
+  { en: 'dog', cn: '狗', emoji: '🐶', color: 'brown', colorCn: '棕色', theme: 'animal', themeCn: '动物' },
+  // 食物
+  { en: 'apple', cn: '苹果', emoji: '🍎', color: 'red', colorCn: '红色', theme: 'food', themeCn: '食物' },
+  { en: 'blueberry', cn: '蓝莓', emoji: '🫐', color: 'blue', colorCn: '蓝色', theme: 'food', themeCn: '食物' },
+  { en: 'broccoli', cn: '西兰花', emoji: '🥦', color: 'green', colorCn: '绿色', theme: 'food', themeCn: '食物' },
+  { en: 'banana', cn: '香蕉', emoji: '🍌', color: 'yellow', colorCn: '黄色', theme: 'food', themeCn: '食物' },
+  { en: 'strawberry', cn: '草莓', emoji: '🍓', color: 'pink', colorCn: '粉色', theme: 'food', themeCn: '食物' },
+  { en: 'grape', cn: '葡萄', emoji: '🍇', color: 'purple', colorCn: '紫色', theme: 'food', themeCn: '食物' },
+  { en: 'carrot', cn: '胡萝卜', emoji: '🥕', color: 'orange', colorCn: '橙色', theme: 'food', themeCn: '食物' },
+  { en: 'bread', cn: '面包', emoji: '🍞', color: 'brown', colorCn: '棕色', theme: 'food', themeCn: '食物' },
+  // 玩具
+  { en: 'balloon', cn: '气球', emoji: '🎈', color: 'red', colorCn: '红色', theme: 'toy', themeCn: '玩具' },
+  { en: 'robot', cn: '机器人', emoji: '🤖', color: 'blue', colorCn: '蓝色', theme: 'toy', themeCn: '玩具' },
+  { en: 'puzzle', cn: '拼图', emoji: '🧩', color: 'green', colorCn: '绿色', theme: 'toy', themeCn: '玩具' },
+  { en: 'kite', cn: '风筝', emoji: '🪁', color: 'yellow', colorCn: '黄色', theme: 'toy', themeCn: '玩具' },
+  { en: 'doll', cn: '娃娃', emoji: '🪆', color: 'pink', colorCn: '粉色', theme: 'toy', themeCn: '玩具' },
+  { en: 'basketball', cn: '篮球', emoji: '🏀', color: 'orange', colorCn: '橙色', theme: 'toy', themeCn: '玩具' },
+  { en: 'teddy', cn: '泰迪熊', emoji: '🧸', color: 'brown', colorCn: '棕色', theme: 'toy', themeCn: '玩具' },
+  { en: 'drum', cn: '鼓', emoji: '🥁', color: 'red', colorCn: '红色', theme: 'toy', themeCn: '玩具' },
+  // 日用品
+  { en: 'clock', cn: '闹钟', emoji: '⏰', color: 'red', colorCn: '红色', theme: 'daily', themeCn: '日用品' },
+  { en: 'book', cn: '书', emoji: '📖', color: 'blue', colorCn: '蓝色', theme: 'daily', themeCn: '日用品' },
+  { en: 'toothbrush', cn: '牙刷', emoji: '🪥', color: 'blue', colorCn: '蓝色', theme: 'daily', themeCn: '日用品' },
+  { en: 'shoe', cn: '鞋子', emoji: '👟', color: 'blue', colorCn: '蓝色', theme: 'daily', themeCn: '日用品' },
+  { en: 'keys', cn: '钥匙', emoji: '🔑', color: 'yellow', colorCn: '黄色', theme: 'daily', themeCn: '日用品' },
+  { en: 'umbrella', cn: '雨伞', emoji: '☂️', color: 'purple', colorCn: '紫色', theme: 'daily', themeCn: '日用品' },
+  { en: 'cup', cn: '杯子', emoji: '☕', color: 'brown', colorCn: '棕色', theme: 'daily', themeCn: '日用品' },
+  { en: 'chair', cn: '椅子', emoji: '🪑', color: 'brown', colorCn: '棕色', theme: 'daily', themeCn: '日用品' }
 ];
+
+const ISPY_THEME_PROMPTS = {
+  animal: { en: 'Find an animal.', cn: '找一只动物' },
+  food: { en: 'Find something to eat.', cn: '找一样吃的东西' },
+  toy: { en: 'Find a toy.', cn: '找一个玩具' },
+  daily: { en: 'Find something you use at home.', cn: '找一样家里用的东西' }
+};
 
 // ===== STATE =====
 const synth = window.speechSynthesis;
@@ -1135,7 +1174,7 @@ let dialogueIndex = 0;
 let dialogueSubIndex = 0;
 let ispyRound = 0;
 let ispyTarget = null;
-let ispyPromptType = 'object'; // 'object' | 'color'
+let ispyPromptType = 'object'; // 'object' | 'color' | 'theme'
 let ispyTiles = [];
 let ispyStars = 0;
 let ispyLocked = false;
@@ -1830,16 +1869,49 @@ function restartDialogue() {
   renderDialogue();
 }
 
+function fillIspyTiles(tiles) {
+  const used = new Set(tiles.map(t => t.en));
+  const rest = shuffleArray(ISPY_DATA.filter(t => !used.has(t.en)));
+  return tiles.concat(rest.slice(0, 6 - tiles.length));
+}
+
 function buildIspyRound() {
-  const pool = shuffleArray(ISPY_DATA);
-  const byColor = {};
-  pool.forEach(item => {
-    if (!byColor[item.color]) byColor[item.color] = item;
-  });
-  const colors = Object.keys(byColor);
-  ispyTiles = colors.slice(0, 6).map(c => byColor[c]);
-  ispyTarget = ispyTiles[Math.floor(Math.random() * ispyTiles.length)];
-  ispyPromptType = Math.random() < 0.5 ? 'object' : 'color';
+  const roll = Math.floor(Math.random() * 3);
+  if (roll === 0) {
+    ispyPromptType = 'object';
+    ispyTiles = shuffleArray(ISPY_DATA).slice(0, 6);
+    ispyTarget = ispyTiles[Math.floor(Math.random() * ispyTiles.length)];
+    return;
+  }
+
+  if (roll === 1) {
+    ispyPromptType = 'color';
+    const colors = [...new Set(ISPY_DATA.map(t => t.color))];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const matches = shuffleArray(ISPY_DATA.filter(t => t.color === color));
+    ispyTiles = fillIspyTiles(matches.slice(0, 2 + Math.floor(Math.random() * 2)));
+    ispyTarget = ispyTiles.find(t => t.color === color);
+    ispyTiles = shuffleArray(ispyTiles);
+    return;
+  }
+
+  ispyPromptType = 'theme';
+  const themes = Object.keys(ISPY_THEME_PROMPTS);
+  const theme = themes[Math.floor(Math.random() * themes.length)];
+  const matches = shuffleArray(ISPY_DATA.filter(t => t.theme === theme));
+  ispyTiles = fillIspyTiles(matches.slice(0, 2 + Math.floor(Math.random() * 2)));
+  ispyTarget = ispyTiles.find(t => t.theme === theme);
+  ispyTiles = shuffleArray(ispyTiles);
+}
+
+function ispyPromptText() {
+  if (ispyPromptType === 'color') {
+    return { en: `Find something ${ispyTarget.color}.`, cn: `找${ispyTarget.colorCn}的东西` };
+  }
+  if (ispyPromptType === 'theme') {
+    return ISPY_THEME_PROMPTS[ispyTarget.theme];
+  }
+  return { en: `Find the ${ispyTarget.en}.`, cn: `找${ispyTarget.cn}` };
 }
 
 function startIspyRound() {
@@ -1869,18 +1941,13 @@ function renderIspy() {
     return;
   }
   if (!ispyTiles.length) buildIspyRound();
-  const promptEn = ispyPromptType === 'object'
-    ? `Find the ${ispyTarget.en}.`
-    : `Find something ${ispyTarget.color}.`;
-  const promptCn = ispyPromptType === 'object'
-    ? `找${ispyTarget.cn}`
-    : `找${ispyTarget.colorCn}的东西`;
+  const prompt = ispyPromptText();
   content.innerHTML = `
     <div class="play-progress">${ispyRound + 1} / 5 · ⭐ ${ispyStars}</div>
     <div class="ispy-prompt">
       <button class="quiz-speaker-btn" onclick="speakIspyPrompt()">🔊</button>
-      <div class="ispy-prompt-text">${promptEn}</div>
-      <div class="play-cn">${promptCn}</div>
+      <div class="ispy-prompt-text">${prompt.en}</div>
+      <div class="play-cn">${prompt.cn}</div>
     </div>
     <div class="ispy-grid">
       ${ispyTiles.map((item, i) =>
@@ -1891,8 +1958,7 @@ function renderIspy() {
 
 function speakIspyPrompt() {
   if (!ispyTarget || ispyRound >= 5) return;
-  if (ispyPromptType === 'object') speak(`Find the ${ispyTarget.en}.`);
-  else speak(`Find something ${ispyTarget.color}.`);
+  speak(ispyPromptText().en);
 }
 
 function answerIspy(i) {
@@ -1901,7 +1967,9 @@ function answerIspy(i) {
   if (!item) return;
   const correct = ispyPromptType === 'object'
     ? item.en === ispyTarget.en
-    : item.color === ispyTarget.color;
+    : ispyPromptType === 'color'
+      ? item.color === ispyTarget.color
+      : item.theme === ispyTarget.theme;
   const el = document.getElementById('ispy-' + i);
   if (!correct) {
     if (el) {
@@ -1913,15 +1981,20 @@ function answerIspy(i) {
     speakIspyPrompt();
     return;
   }
-  if (el) el.classList.add('correct');
+  if (el) {
+    el.classList.add('correct');
+    el.classList.add('revealed');
+    el.innerHTML = `<span class="ispy-emoji">${item.emoji}</span><span class="ispy-word">${item.en}</span><span class="ispy-cn">${item.cn}</span>`;
+  }
   playSfx('correct');
   fxBurstFrom(el, 10);
   fxMascot('cheer');
   ispyLocked = true;
   const token = playSpeechToken;
-  playTimer = setTimeout(() => {
-    if (token !== playSpeechToken) return;
-    playTimer = null;
+  let advanced = false;
+  const advance = () => {
+    if (advanced || token !== playSpeechToken) return;
+    advanced = true;
     ispyStars++;
     ispyLocked = false;
     ispyRound++;
@@ -1929,7 +2002,16 @@ function answerIspy(i) {
       renderIspy();
       fxCelebrate();
     } else nextIspyRound();
-  }, 700);
+  };
+  const fallback = setTimeout(advance, 1500);
+  speak(item.en, () => {
+    if (token !== playSpeechToken) return;
+    setTimeout(() => {
+      if (token !== playSpeechToken) return;
+      clearTimeout(fallback);
+      advance();
+    }, 250);
+  });
 }
 
 // ===== QUIZ =====
